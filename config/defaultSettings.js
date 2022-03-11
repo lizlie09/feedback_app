@@ -1,6 +1,6 @@
 const Settings = {
   navTheme: 'light',
-  primaryColor: '#1890ff',
+  primaryColor: '#F3A931',
   layout: 'mix',
   contentWidth: 'Fluid',
   fixedHeader: false,

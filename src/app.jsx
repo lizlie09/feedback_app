@@ -17,8 +17,7 @@ export async function getInitialState() {
   const fetchUserInfo = async () => {
     try {
       const msg = store.get("user");
-      // return msg;
-      return true
+      return msg;
     } catch (error) {
       history.push(loginPath);
     }

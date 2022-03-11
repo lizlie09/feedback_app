@@ -58,7 +58,7 @@ const AvatarDropdown = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || !currentUser.firstName) {
+  if (!currentUser || !currentUser.firstname) {
     return loading;
   }
 
@@ -80,7 +80,7 @@ const AvatarDropdown = ({ menu }) => {
           alt="avatar"
         />
         <span className={`${styles.name} anticon`}>
-          {currentUser.firstName} {currentUser.lastName}
+          {currentUser.firstname} {currentUser.lastname}
         </span>
       </span>
     </HeaderDropdown>
