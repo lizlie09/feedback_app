@@ -19,10 +19,19 @@ export default [
     ],
   },
   {
+    name: "Dashboard",
     path: "/admin/dashboard",
     component: "./admin",
-    menuRender: false,
-    hideInMenu: true,
+  },
+  {
+    name: "Offices",
+    path: "/admin/offices",
+    component: "./offices",
+  },
+  {
+    name: "Rankings",
+    path: "/admin/ranking",
+    component: "./ranking",
   },
   {
     path: "/rating-page",

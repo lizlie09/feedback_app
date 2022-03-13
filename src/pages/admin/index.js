@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Pie } from "@ant-design/plots";
-import { Col, Row, Card } from "antd";
+import { Col, Row, Card, Button } from "antd";
 import { DatePicker, Space } from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
+import RespondentsModal from "./components/respondentsModal";
 import {
   getPerformance,
   getReportedDepartment,
@@ -15,6 +16,7 @@ const { RangePicker } = DatePicker;
 export default () => {
   let [performance, setPerformance] = useState({});
   let [raterTypes, setRaterTypes] = useState([]);
+  let [respondentsModal, setRespondentsModal] = useState(false);
 
   const _getPerformance = async () => {
     let res = await getPerformance();
@@ -56,7 +58,7 @@ export default () => {
         textAlign: "center",
       },
     },
-    
+
     interactions: [
       {
         type: "element-active",
@@ -81,9 +83,19 @@ export default () => {
 
   return (
     <div>
+      <RespondentsModal
+        state={respondentsModal}
+        setState={setRespondentsModal}
+      />
       <Row>
         <Col span={12}>
-          <Card>
+          <Card
+            extra={
+              <Button type="primary" onClick={() => setRespondentsModal(true)}>
+                See respondents
+              </Button>
+            }
+          >
             <Pie {...config} />
           </Card>
         </Col>
@@ -153,18 +165,12 @@ export default () => {
                 width: 80,
                 dataIndex: "establishment",
               },
-              // {
-              //   title: "Issue",
-              //   render: (dom, entity) => {
-              //     return (
-              //       <div>
-              //         {entity?.reports?.map((data) => {
-              //           return <p>- {data}</p>;
-              //         })}
-              //       </div>
-              //     );
-              //   },
-              // },
+              {
+                title: "Issue",
+                render: (dom, entity) => {
+                  return <strong>{entity?.reports?.join(". ")}</strong>;
+                },
+              },
               {
                 title: "Remarks",
                 dataIndex: "remarks",
@@ -183,6 +189,7 @@ export default () => {
             search={false}
             dateFormatter="string"
             headerTitle="Reported Department"
+            height={400}
           />
         </Col>
         <Col span={8}>
@@ -221,7 +228,8 @@ export default () => {
             search={false}
             dateFormatter="string"
             headerTitle="Overall Comments"
-          />
+            height={400}
+          />{" "}
         </Col>
         {/* <Col span={8}>
           <ProTable

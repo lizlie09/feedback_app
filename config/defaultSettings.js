@@ -6,9 +6,9 @@ const Settings = {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: '',
+  title: 'TSC Breeder Farm',
   pwa: false,
-  logo: 'https://visitour.app/assets/images/logo-color.png',
+  logo: '../assets/images/icons.png',
   iconfontUrl: '',
 };
 export default Settings;
