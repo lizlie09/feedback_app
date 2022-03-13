@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Button, message } from "antd";
 import ProForm, { ProFormText, ProFormRadio } from "@ant-design/pro-form";
-import { addOffice } from "../../../services/office";
+import { editOffice } from "../../../services/office";
 
-export default ({ state, setState, actionRef }) => {
+export default ({ state, setState, actionRef, defaultValue }) => {
   return (
     <>
       <Modal
@@ -16,11 +16,11 @@ export default ({ state, setState, actionRef }) => {
         <ProForm
           onFinish={async (values) => {
             try {
-              const res = await addOffice(values);
+              const res = await editOffice({ _id: defaultValue._id, ...values });
 
               if (res.success) {
                 setState(false);
-                message.success("Successfully added");
+                message.success(res.message);
                 actionRef?.current?.reload();
               } else {
                 message.error(res.message);
@@ -34,11 +34,8 @@ export default ({ state, setState, actionRef }) => {
             name="name"
             label="Name of Office"
             placeholder=""
-            rules={[
-              {
-                required: true,
-              },
-            ]}
+            initialValue={defaultValue.name}
+            extra={"Clear the name of department to delete"}
           />
           <ProFormText
             name="firstname"
@@ -49,6 +46,7 @@ export default ({ state, setState, actionRef }) => {
                 required: true,
               },
             ]}
+            initialValue={defaultValue.firstname}
           />
           <ProFormText
             name="lastname"
@@ -59,6 +57,7 @@ export default ({ state, setState, actionRef }) => {
                 required: true,
               },
             ]}
+            initialValue={defaultValue.lastname}
           />
           <ProFormText
             name="middlename"
@@ -69,6 +68,7 @@ export default ({ state, setState, actionRef }) => {
                 required: true,
               },
             ]}
+            initialValue={defaultValue.middlename}
           />
           <ProFormText
             name="email"
@@ -80,17 +80,7 @@ export default ({ state, setState, actionRef }) => {
                 message: "Field required",
               },
             ]}
-          />
-          <ProFormText.Password
-            name="password"
-            label="Password"
-            placeholder=""
-            rules={[
-              {
-                required: true,
-                message: "Field required",
-              },
-            ]}
+            initialValue={defaultValue.email}
           />
         </ProForm>
       </Modal>

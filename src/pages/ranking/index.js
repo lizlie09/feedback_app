@@ -23,9 +23,12 @@ export default () => {
   return (
     <div>
       <ProTable
-        request={async () => {
+        request={async (params, sorter, filter) => {
+          console.log(filter?.year?.[0])
           try {
-            let res = await getRankings();
+            let res = await getRankings({
+              year: filter?.year?.[0] || undefined,
+            });
             return {
               data: res.rankings,
             };
@@ -41,6 +44,17 @@ export default () => {
           {
             title: "Year",
             dataIndex: "year",
+            filters: true,
+            filterMultiple: false,
+            valueEnum: {
+              2021: { text: "2021" },
+              2022: { text: "2022" },
+              2023: { text: "2023" },
+              2024: { text: "2024" },
+              2025: { text: "2025" },
+              2026: { text: "2026" },
+              2027: { text: "2027" },
+            },
           },
           {
             title: "Overall Percentage",

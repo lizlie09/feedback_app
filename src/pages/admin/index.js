@@ -18,8 +18,8 @@ export default () => {
   let [raterTypes, setRaterTypes] = useState([]);
   let [respondentsModal, setRespondentsModal] = useState(false);
 
-  const _getPerformance = async () => {
-    let res = await getPerformance();
+  const _getPerformance = async (query) => {
+    let res = await getPerformance(query);
     if (res.success) {
       setPerformance(res.rate);
     }
@@ -81,6 +81,17 @@ export default () => {
     return total;
   };
 
+  const onDateChange = (value, dateString) => {
+    _getPerformance({
+      startDate: value
+        ? moment(value[0]).format("YYYY-MM-DD")
+        : moment().subtract(14, "days").format("YYYY-MM-DD"),
+      endDate: value
+        ? moment(value[1]).format("YYYY-MM-DD")
+        : moment(new Date(), "DD MMMM, YYYY").format("YYYY-MM-DD"),
+    });
+  };
+
   return (
     <div>
       <RespondentsModal
@@ -100,48 +111,47 @@ export default () => {
           </Card>
         </Col>
         <Col span={12}>
-          <Card extra={<RangePicker />}>
-            <Card title="Performance">
-              <Card.Grid style={gridStyle}>
-                {" "}
-                {getPercentage(performance.rateOne, performance.Cnt)}% Courtesy
-              </Card.Grid>
-              <Card.Grid hoverable={false} style={gridStyle}>
-                {getPercentage(performance.rateTwo, performance.Cnt)}% Accuracy
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateThree, performance.Cnt)}%
-                Professionalism
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateFour, performance.Cnt)}%
-                Cleanliness
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateFive, performance.Cnt)}% Health
-                Protocol
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateSix, performance.Cnt)}%
-                Timeliness
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateSeven, performance.Cnt)}% Service
-                Efficiency
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateEight, performance.Cnt)}%
-                Fairness
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateNine, performance.Cnt)}% Overall
-                Services
-              </Card.Grid>
-              <Card.Grid style={gridStyle}>
-                {getPercentage(performance.rateTen, performance.Cnt)}%
-                Responsiveness
-              </Card.Grid>
-            </Card>
+          <Card
+            title="Performance"
+            extra={<RangePicker onChange={onDateChange} />}
+          >
+            <Card.Grid style={gridStyle}>
+              {" "}
+              {getPercentage(performance.rateOne, performance.Cnt)}% Courtesy
+            </Card.Grid>
+            <Card.Grid hoverable={false} style={gridStyle}>
+              {getPercentage(performance.rateTwo, performance.Cnt)}% Accuracy
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateThree, performance.Cnt)}%
+              Professionalism
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateFour, performance.Cnt)}%
+              Cleanliness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateFive, performance.Cnt)}% Health
+              Protocol
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateSix, performance.Cnt)}% Timeliness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateSeven, performance.Cnt)}% Service
+              Efficiency
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateEight, performance.Cnt)}% Fairness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateNine, performance.Cnt)}% Overall
+              Services
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateTen, performance.Cnt)}%
+              Responsiveness
+            </Card.Grid>
           </Card>
         </Col>
       </Row>
