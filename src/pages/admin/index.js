@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Pie } from "@ant-design/plots";
 import { Col, Row, Card, Button } from "antd";
 import { DatePicker, Space } from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
 import RespondentsModal from "./components/respondentsModal";
+import { PlusOutlined, EditOutlined } from "@ant-design/icons";
 import {
   getPerformance,
   getReportedDepartment,
@@ -12,11 +13,17 @@ import {
 } from "../../services/dashboard";
 import moment from "moment";
 const { RangePicker } = DatePicker;
+import UpdateReport from "./components/UpdateReport";
 
 export default () => {
   let [performance, setPerformance] = useState({});
   let [raterTypes, setRaterTypes] = useState([]);
   let [respondentsModal, setRespondentsModal] = useState(false);
+
+  let [updateReport, setUpdateReport] = useState(false);
+  let [selectedReport, setSelectedReport] = useState({});
+
+  let reportsTableRef = useRef();
 
   const _getPerformance = async (query) => {
     let res = await getPerformance(query);
@@ -98,7 +105,13 @@ export default () => {
         state={respondentsModal}
         setState={setRespondentsModal}
       />
-      <Row>
+      <UpdateReport
+        state={updateReport}
+        setState={setUpdateReport}
+        selectedReport={selectedReport}
+        actionRef={reportsTableRef}
+      />
+      <Row gutter={10}>
         <Col span={12}>
           <Card
             extra={
@@ -156,12 +169,21 @@ export default () => {
         </Col>
       </Row>
       <div style={{ height: 10 }} />
-      <Row gutter={5}>
-        <Col span={8}>
+      <Row gutter={10}>
+        <Col span={12}>
           <ProTable
-            request={async () => {
+            actionRef={reportsTableRef}
+            request={async (params, sorter, filter) => {
+              console.log(filter);
+
               try {
-                let res = await getReportedDepartment();
+                let res = await getReportedDepartment({
+                  remarks: filter?.remarks
+                    ? filter?.remarks?.[0] === "1"
+                      ? true
+                      : false
+                    : null,
+                });
                 return {
                   data: res.reports,
                 };
@@ -184,12 +206,37 @@ export default () => {
               {
                 title: "Remarks",
                 dataIndex: "remarks",
-                render: (dom) => `${dom ? "Done" : "Pending"}`,
+                render: (dom, entity) =>
+                  `${entity.remarks ? "Done" : "Pending"}`,
+                filters: true,
+                filterMultiple: false,
+                valueEnum: {
+                  1: { text: "Done" },
+                  0: { text: "Pending" },
+                },
               },
               {
                 title: "Date",
                 dataIndex: "createdAt",
                 render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+              },
+              {
+                title: "Actions",
+                render: (dom, entity) => {
+                  return (
+                    <Button
+                      key="button"
+                      icon={<EditOutlined />}
+                      type="primary"
+                      onClick={() => {
+                        setSelectedReport(entity);
+                        setUpdateReport(true);
+                      }}
+                    >
+                      Update
+                    </Button>
+                  );
+                },
               },
             ]}
             rowKey="key"
@@ -199,10 +246,9 @@ export default () => {
             search={false}
             dateFormatter="string"
             headerTitle="Reported Department"
-            height={400}
           />
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <ProTable
             request={async () => {
               try {
@@ -238,21 +284,8 @@ export default () => {
             search={false}
             dateFormatter="string"
             headerTitle="Overall Comments"
-            height={400}
           />{" "}
         </Col>
-        {/* <Col span={8}>
-          <ProTable
-            columns={columns}
-            rowKey="key"
-            pagination={{
-              showQuickJumper: true,
-            }}
-            search={false}
-            dateFormatter="string"
-            headerTitle="Offices"
-          />
-        </Col> */}
       </Row>
     </div>
   );

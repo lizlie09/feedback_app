@@ -33,6 +33,14 @@ export async function getReportedDepartment(query) {
   });
 }
 
+export async function updateReport(payload) {
+  return request(`${API_URL}/reply-report`, {
+    method: "POST",
+    data: payload,
+    skipErrorHandler: true,
+  });
+}
+
 export async function getComments(query) {
   return request(`${API_URL}/get-comments`, {
     method: "GET",

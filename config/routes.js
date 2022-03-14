@@ -34,6 +34,13 @@ export default [
     component: "./ranking",
   },
   {
+    layout: false,
+    path: "/",
+    component: "./user/Login",
+    menuRender: false,
+    hideInMenu: true,
+  },
+  {
     path: "/rating-page",
     component: "./rating-page",
     menuRender: false,

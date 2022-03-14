@@ -16,6 +16,7 @@ import ProForm, {
 import { Tabs, Tag, Radio, Card, Col, Row, message } from "antd";
 import { rate, report } from "@/services/rate";
 import { history } from "umi";
+import { useLocation } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -39,25 +40,28 @@ export default () => {
           }}
         >
           <ProFormRadio.Group
-            name={"raterType"}
-            style={{
-              margin: 16,
-            }}
-            radioType="button"
-            options={["Doctor", "Client", "Company Employee", "Visitor"]}
-          />
-          <ProFormRadio.Group
             name={"establishment"}
             style={{
               margin: 16,
             }}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
             radioType="button"
+            label="Select Office"
             options={["Accounting Office", "Finance Office"]}
           />
           <ProFormText
             name="fullname"
             label="Full Name"
             placeholder="Enter fullname"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
           />
           <Row gutter={16}>
             <Tag color="gold">5 Stars - Very Satisfied</Tag>
@@ -69,24 +73,104 @@ export default () => {
           <div style={{ height: 20 }} />
           <Row gutter={24}>
             <Col span={5}>
-              <ProFormRate name="star1" label="Courtesy" />
-              <ProFormRate name="star2" label="Cleanliness" />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star1"
+                label="Courtesy"
+              />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star2"
+                label="Cleanliness"
+              />
             </Col>
             <Col span={5}>
-              <ProFormRate name="star3" label="Ground Landscaping" />
-              <ProFormRate name="star4" label="Water System" />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star3"
+                label="Ground Landscaping"
+              />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star4"
+                label="Water System"
+              />
             </Col>
             <Col span={5}>
-              <ProFormRate name="star5" label="Biosecurity" />
-              <ProFormRate name="star6" label="Responsiveness" />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star5"
+                label="Biosecurity"
+              />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star6"
+                label="Responsiveness"
+              />
             </Col>
             <Col span={5}>
-              <ProFormRate name="star7" label="Health Protocol" />
-              <ProFormRate name="star8" label="Painted Walls" />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star7"
+                label="Health Protocol"
+              />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star8"
+                label="Painted Walls"
+              />
             </Col>
             <Col span={4}>
-              <ProFormRate name="star9" label="Adequate Lightning" />
-              <ProFormRate name="star10" label="Garbage Bin Labeled" />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star9"
+                label="Adequate Lightning"
+              />
+              <ProFormRate
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                name="star10"
+                label="Garbage Bin Labeled"
+              />
             </Col>
           </Row>
 
@@ -120,25 +204,28 @@ export default () => {
           }}
         >
           <ProFormRadio.Group
-            name={"raterType"}
-            style={{
-              margin: 16,
-            }}
-            radioType="button"
-            options={["Doctor", "Client", "Company Employee", "Visitor"]}
-          />
-          <ProFormRadio.Group
             style={{
               margin: 16,
             }}
             name="establishment"
             radioType="button"
+            label="Select Office"
             options={["Accounting Office", "Finance Office"]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
           />
           <ProFormText
             name="fullname"
             label="Full Name"
             placeholder="Enter fullname"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
           />
           <ProFormCheckbox.Group
             name="reports"
@@ -153,6 +240,11 @@ export default () => {
               "Swearing Or Verbal Abuse Of Fellow Employees Or Client In The Public",
               "Unauthorized Use Of Councils Facilities ( Ex. Tools, Equipment’s And Vehicles)",
             ]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
           />
           <ProFormTextArea
             name="reports_comment"
@@ -165,22 +257,29 @@ export default () => {
     );
   };
 
+  const location = useLocation();
+  let { fullname, raterType } = location.state;
+
   return (
     <div>
-      <h1>Rate</h1>
-      <h3>Select Department</h3>
-      <Tabs
-        defaultActiveKey="1"
-        style={{ marginBottom: 32 }}
-        destroyInactiveTabPane={true}
-      >
-        <TabPane tab="Click to Rate" key="1">
-          <RatingView />
-        </TabPane>
-        <TabPane tab="Click to Report" key="2">
-          <ReportView />
-        </TabPane>
-      </Tabs>
+      <h1>Hello, {fullname}</h1>
+      <h4>{raterType}</h4>
+      <Card>
+        <Tabs
+          defaultActiveKey="1"
+          style={{ marginBottom: 32 }}
+          destroyInactiveTabPane={true}
+        >
+          <TabPane tab="Click to Rate" key="1">
+            <RatingView />
+          </TabPane>
+          {raterType !== "Visitor" && (
+            <TabPane tab="Click to Report" key="2">
+              <ReportView />
+            </TabPane>
+          )}
+        </Tabs>
+      </Card>
     </div>
   );
 };

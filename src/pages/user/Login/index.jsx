@@ -5,6 +5,9 @@ import { history, useModel } from "umi";
 import { login, signup } from "@/services/user";
 import styles from "./index.less";
 import store from "store";
+import { Typography } from "antd";
+
+const { Title } = Typography;
 
 import ProForm, { ProFormText, ProFormRadio } from "@ant-design/pro-form";
 
@@ -14,9 +17,9 @@ const Login = () => {
   const { initialState, setInitialState } = useModel("@@initialState");
   let tabRef = useRef();
 
-  const fetchUserInfo = async (user, token) => {
+  const fetchUserInfo = async (user, token, mode) => {
     const userInfo = user;
-    store.set("user", user);
+    store.set("user", { ...user, mode });
     store.set("token", token);
     if (userInfo) {
       await setInitialState((s) => ({ ...s, currentUser: userInfo }));
@@ -29,7 +32,7 @@ const Login = () => {
 
       if (res.success) {
         message.success("Welcome : D");
-        await fetchUserInfo(res.user, res.token);
+        await fetchUserInfo(res.user, res.token, values.mode);
 
         if (!history) return;
         const { query } = history.location;
@@ -54,11 +57,10 @@ const Login = () => {
           await handleSubmit(values);
         }}
       >
-        <div style={{ marginTop: 30 }} />
+        <div style={{ marginTop: 10 }} />
         <ProFormRadio.Group
-          name="isAdmin"
+          name="mode"
           radioType="button"
-          initialValue={true}
           options={[
             {
               label: "Administrator",
@@ -67,6 +69,11 @@ const Login = () => {
             {
               label: "Assigned Officer",
               value: "assigned-officer",
+            },
+          ]}
+          rules={[
+            {
+              required: true,
             },
           ]}
         />
@@ -178,15 +185,15 @@ const Login = () => {
   };
 
   return (
-    <div style={{  marginLeft: '10vw', marginRight: '10vw' }}>
-      <Row align="middle">
+    <div style={{ marginLeft: "10vw", marginRight: "10vw" }}>
+      <Row align="middle" style={{ marginTop: 20 }}>
         <Col>
           <img
             src={"../assets/images/icons.png"}
             style={{
               height: 50,
               width: 50,
-              marginRight: 20
+              marginRight: 20,
             }}
           />
         </Col>
@@ -194,17 +201,58 @@ const Login = () => {
           <h3> TSC Breeder farm. External farm of San Miguel foods INC</h3>
         </Col>
       </Row>
-      <Row style={{ marginTop: 50 }}>
-        <Col span={12} align="middle">
-          <img
-            src={"../assets/images/login_image.png"}
-            style={{
-              width: "50%",
-              objectFit: "contain",
+      <Row style={{ marginTop: 50 }} gutter={100}>
+        <Col span={12}>
+          <ProForm
+            style={{}}
+            onFinish={(values) => {
+              console.log(values);
+              history.push("/rating-page", values);
             }}
-          />
+            submitter={{
+              render: (props, doms) => {
+                return [
+                  <Button
+                    loading={props?.submitButtonProps?.loading}
+                    type="primary"
+                    key="submit"
+                    onClick={() => props.form?.submit?.()}
+                  >
+                    Rate Now!
+                  </Button>,
+                ];
+              },
+            }}
+          >
+            <Title level={3}>Rate</Title>
+            <ProFormText
+              name="fullname"
+              placeholder="Full Name"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              label={"Your name"}
+            />
+            <ProFormRadio.Group
+              name={"raterType"}
+              style={{
+                margin: 16,
+              }}
+              label={"I am a"}
+              radioType="button"
+              options={["Doctor", "Client", "Company Employee", "Visitor"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            />
+          </ProForm>
         </Col>
         <Col span={12}>
+          <Title level={3}>Administrator</Title>
           <Tabs defaultActiveKey="1" tabRef={tabRef}>
             <TabPane tab="Log In" key="1">
               <LoginForm />
