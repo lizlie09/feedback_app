@@ -10,18 +10,25 @@ import {
   getReportedDepartment,
   getComments,
   getRatertypes,
+  getAssignedOfficeComments,
 } from "../../services/dashboard";
 import moment from "moment";
 const { RangePicker } = DatePicker;
 import UpdateReport from "./components/UpdateReport";
+import SeeRating from "./components/SeeRating";
+import store from "store";
+import { PageContainer } from "@ant-design/pro-layout";
 
 export default () => {
+  let user = store.get("user");
   let [performance, setPerformance] = useState({});
   let [raterTypes, setRaterTypes] = useState([]);
   let [respondentsModal, setRespondentsModal] = useState(false);
 
   let [updateReport, setUpdateReport] = useState(false);
   let [selectedReport, setSelectedReport] = useState({});
+
+  let [seeRatings, setSeeRatings] = useState(false);
 
   let reportsTableRef = useRef();
 
@@ -99,76 +106,8 @@ export default () => {
     });
   };
 
-  return (
-    <div>
-      <RespondentsModal
-        state={respondentsModal}
-        setState={setRespondentsModal}
-      />
-      <UpdateReport
-        state={updateReport}
-        setState={setUpdateReport}
-        selectedReport={selectedReport}
-        actionRef={reportsTableRef}
-      />
-      <Row gutter={10}>
-        <Col span={12}>
-          <Card
-            extra={
-              <Button type="primary" onClick={() => setRespondentsModal(true)}>
-                See respondents
-              </Button>
-            }
-          >
-            <Pie {...config} />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card
-            title="Performance"
-            extra={<RangePicker onChange={onDateChange} />}
-          >
-            <Card.Grid style={gridStyle}>
-              {" "}
-              {getPercentage(performance.rateOne, performance.Cnt)}% Courtesy
-            </Card.Grid>
-            <Card.Grid hoverable={false} style={gridStyle}>
-              {getPercentage(performance.rateTwo, performance.Cnt)}% Accuracy
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateThree, performance.Cnt)}%
-              Professionalism
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateFour, performance.Cnt)}%
-              Cleanliness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateFive, performance.Cnt)}% Health
-              Protocol
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateSix, performance.Cnt)}% Timeliness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateSeven, performance.Cnt)}% Service
-              Efficiency
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateEight, performance.Cnt)}% Fairness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateNine, performance.Cnt)}% Overall
-              Services
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateTen, performance.Cnt)}%
-              Responsiveness
-            </Card.Grid>
-          </Card>
-        </Col>
-      </Row>
-      <div style={{ height: 10 }} />
+  let AdminTable = () => {
+    return (
       <Row gutter={10}>
         <Col span={12}>
           <ProTable
@@ -287,6 +226,172 @@ export default () => {
           />{" "}
         </Col>
       </Row>
-    </div>
+    );
+  };
+
+  const AssignedOfferTable = () => {
+    return (
+      <ProTable
+        request={async () => {
+          try {
+            let res = await getAssignedOfficeComments({
+              officeName: user.name,
+            });
+            return {
+              data: res.comments,
+            };
+          } catch (err) {
+            console.log(err);
+          }
+        }}
+        columns={[
+          {
+            title: "Name",
+            dataIndex: "fullname",
+          },
+          {
+            title: "Ratings",
+            title: "Reports",
+            render: (dom, entity) => {
+              return (
+                <Button
+                  onClick={() => {
+                    setSeeRatings(true);
+                    setSelectedReport(entity);
+                  }}
+                >
+                  See Ratings
+                </Button>
+              );
+            },
+          },
+          {
+            title: "Comments",
+            dataIndex: "rateComment",
+          },
+          {
+            title: "Reports",
+            render: (dom, entity) => {
+              return <strong>{entity?.reports?.join(". ")}</strong>;
+            },
+          },
+          {
+            title: "Remarks",
+            dataIndex: "remarks",
+            render: (dom) => (dom ? "Done" : "Pending"),
+          },
+          {
+            title: "Date",
+            dataIndex: "createdAt",
+            render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+          },
+          {
+            title: "Actions",
+            render: (dom, entity) => {
+              return (
+                <Button
+                  key="button"
+                  icon={<EditOutlined />}
+                  type="primary"
+                  onClick={() => {
+                    setSelectedReport(entity);
+                    setUpdateReport(true);
+                  }}
+                >
+                  Update
+                </Button>
+              );
+            },
+          },
+        ]}
+        rowKey="key"
+        pagination={{
+          showQuickJumper: true,
+        }}
+        search={false}
+        dateFormatter="string"
+        headerTitle="Overall Comments"
+      />
+    );
+  };
+  console.log(user);
+  return (
+    <PageContainer title={user.mode === "admin" ? "Dashboard" : user.name}>
+      <RespondentsModal
+        state={respondentsModal}
+        setState={setRespondentsModal}
+      />
+      <UpdateReport
+        state={updateReport}
+        setState={setUpdateReport}
+        selectedReport={selectedReport}
+        actionRef={reportsTableRef}
+      />
+      <SeeRating
+        state={seeRatings}
+        setState={setSeeRatings}
+        comment={selectedReport}
+      />
+      <Row gutter={10}>
+        <Col span={12}>
+          <Card
+            extra={
+              <Button type="primary" onClick={() => setRespondentsModal(true)}>
+                See respondents
+              </Button>
+            }
+          >
+            <Pie {...config} />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card
+            title="Performance"
+            extra={<RangePicker onChange={onDateChange} />}
+          >
+            <Card.Grid style={gridStyle}>
+              {" "}
+              {getPercentage(performance.rateOne, performance.Cnt)}% Courtesy
+            </Card.Grid>
+            <Card.Grid hoverable={false} style={gridStyle}>
+              {getPercentage(performance.rateTwo, performance.Cnt)}% Accuracy
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateThree, performance.Cnt)}%
+              Professionalism
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateFour, performance.Cnt)}%
+              Cleanliness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateFive, performance.Cnt)}% Health
+              Protocol
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateSix, performance.Cnt)}% Timeliness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateSeven, performance.Cnt)}% Service
+              Efficiency
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateEight, performance.Cnt)}% Fairness
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateNine, performance.Cnt)}% Overall
+              Services
+            </Card.Grid>
+            <Card.Grid style={gridStyle}>
+              {getPercentage(performance.rateTen, performance.Cnt)}%
+              Responsiveness
+            </Card.Grid>
+          </Card>
+        </Col>
+      </Row>
+      <div style={{ height: 10 }} />
+      {user.mode === "admin" && <AdminTable />}
+      {user.mode === "assigned-officer" && <AssignedOfferTable />}
+    </PageContainer>
   );
 };

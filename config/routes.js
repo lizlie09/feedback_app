@@ -24,6 +24,13 @@ export default [
     component: "./admin",
   },
   {
+    name: "Dashboard",
+    path: "/assignedOffer/dashboard",
+    component: "./admin",
+    menuRender: false,
+    hideInMenu: true,
+  },
+  {
     name: "Offices",
     path: "/admin/offices",
     component: "./offices",

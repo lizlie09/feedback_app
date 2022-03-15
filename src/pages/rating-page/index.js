@@ -53,16 +53,6 @@ export default () => {
             label="Select Office"
             options={["Accounting Office", "Finance Office"]}
           />
-          <ProFormText
-            name="fullname"
-            label="Full Name"
-            placeholder="Enter fullname"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          />
           <Row gutter={16}>
             <Tag color="gold">5 Stars - Very Satisfied</Tag>
             <Tag color="gold">4 Stars - Satisfied</Tag>
@@ -211,16 +201,6 @@ export default () => {
             radioType="button"
             label="Select Office"
             options={["Accounting Office", "Finance Office"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          />
-          <ProFormText
-            name="fullname"
-            label="Full Name"
-            placeholder="Enter fullname"
             rules={[
               {
                 required: true,

@@ -51,3 +51,14 @@ export async function getComments(query) {
     skipErrorHandler: true,
   });
 }
+
+export async function getAssignedOfficeComments(query) {
+  return request(`${API_URL}/get-assignedoffice-comments`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}

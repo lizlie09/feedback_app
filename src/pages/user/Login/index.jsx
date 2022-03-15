@@ -37,7 +37,11 @@ const Login = () => {
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query;
-        history.push("/admin/dashboard");
+        history.push(
+          values.mode === "admin"
+            ? "/admin/dashboard"
+            : "/assignedOffer/dashboard"
+        );
         return;
       } else {
         message.error(res.message);
