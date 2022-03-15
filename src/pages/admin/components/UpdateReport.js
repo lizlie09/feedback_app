@@ -7,8 +7,12 @@ import ProForm, {
   ProFormTextArea,
 } from "@ant-design/pro-form";
 import { updateReport } from "../../../services/dashboard";
+import store from "store"
 
 export default ({ state, setState, actionRef, selectedReport }) => {
+
+  let user = store.get("user")
+
   return (
     <>
       <ModalForm
@@ -64,15 +68,10 @@ export default ({ state, setState, actionRef, selectedReport }) => {
           name="reports"
           label="Reports"
           placeholder=""
-          rules={[
-            {
-              required: true,
-            },
-          ]}
           disabled
           initialValue={selectedReport?.reports?.join(". ")}
         />
-        <ProFormText
+        <ProFormTextArea
           name="reply"
           label="Response"
           placeholder=""
@@ -81,10 +80,10 @@ export default ({ state, setState, actionRef, selectedReport }) => {
               required: true,
             },
           ]}
-          disabled
+          disabled={user.mode === "admin" ? true : false }
           initialValue={selectedReport.reply}
         />
-        <ProFormSelect
+       {user.mode === "admin" && <ProFormSelect
           request={async () => [
             { label: "Done", value: true },
             { label: "Pending", value: false },
@@ -92,7 +91,7 @@ export default ({ state, setState, actionRef, selectedReport }) => {
           initialValue={selectedReport.remarks}
           name="remarks"
           label="Remarks"
-        />
+        />}
       </ModalForm>
     </>
   );
