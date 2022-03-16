@@ -21,12 +21,15 @@ import { useLocation } from "react-router-dom";
 const { TabPane } = Tabs;
 
 export default () => {
+  const location = useLocation();
+  let { fullname, raterType } = location.state;
+
   const RatingView = () => {
     return (
       <Card>
         <ProForm
           onFinish={async (value) => {
-            let res = await rate(value);
+            let res = await rate({ ...value, fullname, raterType });
             try {
               if (res.success) {
                 message.success(res.message);
@@ -180,7 +183,7 @@ export default () => {
       <Card>
         <ProForm
           onFinish={async (value) => {
-            let res = await report(value);
+            let res = await report({ ...value, fullname, raterType });
             try {
               if (res.success) {
                 message.success(res.message);
@@ -236,9 +239,6 @@ export default () => {
       </Card>
     );
   };
-
-  const location = useLocation();
-  let { fullname, raterType } = location.state;
 
   return (
     <div>
