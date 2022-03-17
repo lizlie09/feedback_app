@@ -20,7 +20,9 @@ export default ({ state, setState, actionRef, selectedReport }) => {
         centered
         visible={state}
         width={400}
-        onCancel={() => setState(false)}
+        modalProps={{
+          onCancel: () => setState(false),
+        }}
         onFinish={async (values) => {
           try {
             const res = await updateReport({

@@ -21,3 +21,14 @@ export async function signup(payload) {
     skipErrorHandler: true,
   });
 }
+
+export async function getAdmins(query) {
+  return request(`${API_URL}/get-admins`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}

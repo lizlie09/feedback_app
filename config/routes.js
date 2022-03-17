@@ -21,12 +21,12 @@ export default [
   {
     name: "Dashboard",
     path: "/admin/dashboard",
-    component: "./admin",
+    component: "./dashboard",
   },
   {
     name: "Dashboard",
     path: "/assignedOffer/dashboard",
-    component: "./admin",
+    component: "./dashboard",
     menuRender: false,
     hideInMenu: true,
   },
@@ -39,6 +39,11 @@ export default [
     name: "Rankings",
     path: "/admin/ranking",
     component: "./ranking",
+  },
+  {
+    name: "Admin List",
+    path: "/admin/admin-list",
+    component: "./admins",
   },
   {
     layout: false,

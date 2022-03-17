@@ -1,13 +1,14 @@
-import { Space } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import React from 'react';
-import { useModel, SelectLang } from 'umi';
-import Avatar from './AvatarDropdown';
-import HeaderSearch from '../HeaderSearch';
-import styles from './index.less';
+import { Space } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import React from "react";
+import { useModel, SelectLang } from "umi";
+import Avatar from "./AvatarDropdown";
+import HeaderSearch from "../HeaderSearch";
+import styles from "./index.less";
+import { useLocation } from "react-router-dom";
 
 const GlobalHeaderRight = () => {
-  const { initialState } = useModel('@@initialState');
+  const { initialState } = useModel("@@initialState");
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -16,14 +17,16 @@ const GlobalHeaderRight = () => {
   const { navTheme, layout } = initialState.settings;
   let className = styles.right;
 
-  if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
+  if ((navTheme === "dark" && layout === "top") || layout === "mix") {
     className = `${styles.right}  ${styles.dark}`;
   }
 
+  const location = useLocation();
+  console.log(location.pathname);
+
   return (
     <Space className={className}>
-      <Avatar />
-      <SelectLang className={styles.action} />
+      {location.pathname !== "/rating-page" && <Avatar />}
     </Space>
   );
 };

@@ -3,7 +3,7 @@ import { Pie } from "@ant-design/plots";
 import { Col, Row, Card, Button } from "antd";
 import { DatePicker, Space } from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
-import RespondentsModal from "./components/respondentsModal";
+import RespondentsModal from "./components/RespondentsModal";
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
 import {
   getPerformance,
@@ -128,8 +128,6 @@ export default () => {
           <ProTable
             actionRef={reportsTableRef}
             request={async (params, sorter, filter) => {
-              console.log(filter);
-
               try {
                 let res = await getReportedDepartment({
                   remarks: filter?.remarks
@@ -138,9 +136,11 @@ export default () => {
                       : false
                     : null,
                   establishment: filter.establishment?.[0] || null,
+                  ...params,
                 });
                 return {
                   data: res.reports,
+                  total: res.total,
                 };
               } catch (err) {
                 console.log(err);
@@ -199,7 +199,7 @@ export default () => {
             ]}
             rowKey="key"
             pagination={{
-              showQuickJumper: true,
+              pageSize: 10,
             }}
             search={false}
             dateFormatter="string"
@@ -216,9 +216,11 @@ export default () => {
                       ? true
                       : false
                     : null,
+                  ...params,
                 });
                 return {
                   data: res.comments,
+                  total: res?.total
                 };
               } catch (err) {
                 console.log(err);
@@ -268,7 +270,7 @@ export default () => {
             ]}
             rowKey="key"
             pagination={{
-              showQuickJumper: true,
+              pageSize: 10,
             }}
             search={false}
             dateFormatter="string"
@@ -344,7 +346,10 @@ export default () => {
                   icon={<EditOutlined />}
                   type="primary"
                   onClick={() => {
-                    setSelectedReport({ mode: "assigned-officer", data: entity });
+                    setSelectedReport({
+                      mode: "assigned-officer",
+                      data: entity,
+                    });
                     setUpdateReport(true);
                   }}
                 >
