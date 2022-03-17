@@ -43,7 +43,6 @@ export default ({ state, setState, comment }) => {
               ]}
               name="star1"
               label="Courtesy"
-              disabled
             />
             <ProFormRate
               rules={[

@@ -1,13 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProForm, {
-  ModalForm,
-  DrawerForm,
-  QueryFilter,
-  LightFilter,
-  StepsForm,
-  ProFormText,
-  ProFormDateRangePicker,
-  ProFormSelect,
   ProFormRadio,
   ProFormRate,
   ProFormTextArea,
@@ -17,12 +9,26 @@ import { Tabs, Tag, Radio, Card, Col, Row, message } from "antd";
 import { rate, report } from "@/services/rate";
 import { history } from "umi";
 import { useLocation } from "react-router-dom";
+import { getOffices } from "../../services/office";
 
 const { TabPane } = Tabs;
 
 export default () => {
   const location = useLocation();
   let { fullname, raterType } = location.state;
+  let [offices, setOffices] = useState([]);
+
+  useEffect(() => {
+    const fetchOffices = async () => {
+      let res = await getOffices();
+      if (res.success) {
+        setOffices(res.offices);
+      } else {
+        message.error("Failed to fetch offices");
+      }
+    };
+    fetchOffices();
+  }, []);
 
   const RatingView = () => {
     return (
@@ -54,7 +60,7 @@ export default () => {
             ]}
             radioType="button"
             label="Select Office"
-            options={["Accounting Office", "Finance Office"]}
+            options={offices?.map((data) => data.name)}
           />
           <Row gutter={16}>
             <Tag color="gold">5 Stars - Very Satisfied</Tag>
@@ -82,7 +88,7 @@ export default () => {
                   },
                 ]}
                 name="star2"
-                label="Cleanliness"
+                label="Accuracy"
               />
             </Col>
             <Col span={5}>
@@ -93,7 +99,7 @@ export default () => {
                   },
                 ]}
                 name="star3"
-                label="Ground Landscaping"
+                label="Professionalism"
               />
               <ProFormRate
                 rules={[
@@ -102,7 +108,7 @@ export default () => {
                   },
                 ]}
                 name="star4"
-                label="Water System"
+                label="Cleanliness"
               />
             </Col>
             <Col span={5}>
@@ -113,7 +119,7 @@ export default () => {
                   },
                 ]}
                 name="star5"
-                label="Biosecurity"
+                label="Health Protocol"
               />
               <ProFormRate
                 rules={[
@@ -122,7 +128,7 @@ export default () => {
                   },
                 ]}
                 name="star6"
-                label="Responsiveness"
+                label="Timeliness"
               />
             </Col>
             <Col span={5}>
@@ -133,7 +139,7 @@ export default () => {
                   },
                 ]}
                 name="star7"
-                label="Health Protocol"
+                label="Service Efficiency"
               />
               <ProFormRate
                 rules={[
@@ -142,7 +148,7 @@ export default () => {
                   },
                 ]}
                 name="star8"
-                label="Painted Walls"
+                label="Fairness"
               />
             </Col>
             <Col span={4}>
@@ -153,7 +159,7 @@ export default () => {
                   },
                 ]}
                 name="star9"
-                label="Adequate Lightning"
+                label="Overall Services"
               />
               <ProFormRate
                 rules={[
@@ -162,7 +168,7 @@ export default () => {
                   },
                 ]}
                 name="star10"
-                label="Garbage Bin Labeled"
+                label="Responsiveness"
               />
             </Col>
           </Row>
@@ -203,7 +209,7 @@ export default () => {
             name="establishment"
             radioType="button"
             label="Select Office"
-            options={["Accounting Office", "Finance Office"]}
+            options={offices?.map((data) => data.name)}
             rules={[
               {
                 required: true,

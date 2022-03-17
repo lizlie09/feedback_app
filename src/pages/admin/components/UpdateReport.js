@@ -7,11 +7,11 @@ import ProForm, {
   ProFormTextArea,
 } from "@ant-design/pro-form";
 import { updateReport } from "../../../services/dashboard";
-import store from "store"
+import store from "store";
 
 export default ({ state, setState, actionRef, selectedReport }) => {
-
-  let user = store.get("user")
+  let user = store.get("user");
+  let { mode, data } = selectedReport;
 
   return (
     <>
@@ -24,7 +24,7 @@ export default ({ state, setState, actionRef, selectedReport }) => {
         onFinish={async (values) => {
           try {
             const res = await updateReport({
-              _id: selectedReport._id,
+              _id: data._id,
               remarks: values.remarks,
             });
 
@@ -50,7 +50,7 @@ export default ({ state, setState, actionRef, selectedReport }) => {
             },
           ]}
           disabled
-          initialValue={selectedReport.establishment}
+          initialValue={data?.establishment}
         />
         <ProFormText
           name="name"
@@ -62,36 +62,44 @@ export default ({ state, setState, actionRef, selectedReport }) => {
             },
           ]}
           disabled
-          initialValue={selectedReport.fullname}
+          initialValue={data?.fullname}
         />
-        <ProFormTextArea
-          name="reports"
-          label="Reports"
-          placeholder=""
-          disabled
-          initialValue={selectedReport?.reports?.join(". ")}
-        />
+        {mode === "reports" && (
+          <ProFormTextArea
+            name="reports"
+            label="Reports"
+            placeholder=""
+            disabled
+            initialValue={data?.reports?.join(". ")}
+          />
+        )}
+        {mode === "comments" && (
+          <ProFormTextArea
+            name="rateComment"
+            label="Customer Concern"
+            placeholder=""
+            disabled
+            initialValue={data?.rateComment}
+          />
+        )}
         <ProFormTextArea
           name="reply"
           label="Response"
           placeholder=""
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-          disabled={user.mode === "admin" ? true : false }
-          initialValue={selectedReport.reply}
+          disabled={user?.mode === "admin" ? true : false}
+          initialValue={data?.reply}
         />
-       {user.mode === "admin" && <ProFormSelect
-          request={async () => [
-            { label: "Done", value: true },
-            { label: "Pending", value: false },
-          ]}
-          initialValue={selectedReport.remarks}
-          name="remarks"
-          label="Remarks"
-        />}
+        {user.mode === "admin" && (
+          <ProFormSelect
+            request={async () => [
+              { label: "Done", value: true },
+              { label: "Pending", value: false },
+            ]}
+            initialValue={data?.remarks}
+            name="remarks"
+            label="Remarks"
+          />
+        )}
       </ModalForm>
     </>
   );

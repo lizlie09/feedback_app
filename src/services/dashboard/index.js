@@ -33,6 +33,17 @@ export async function getReportedDepartment(query) {
   });
 }
 
+export async function getRespondents(query) {
+  return request(`${API_URL}/get-respondents`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}
+
 export async function updateReport(payload) {
   return request(`${API_URL}/reply-report`, {
     method: "POST",

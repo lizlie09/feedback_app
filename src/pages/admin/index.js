@@ -18,19 +18,34 @@ import UpdateReport from "./components/UpdateReport";
 import SeeRating from "./components/SeeRating";
 import store from "store";
 import { PageContainer } from "@ant-design/pro-layout";
+import { getOffices } from "../../services/office";
 
 export default () => {
   let user = store.get("user");
   let [performance, setPerformance] = useState({});
   let [raterTypes, setRaterTypes] = useState([]);
   let [respondentsModal, setRespondentsModal] = useState(false);
-
   let [updateReport, setUpdateReport] = useState(false);
   let [selectedReport, setSelectedReport] = useState({});
-
   let [seeRatings, setSeeRatings] = useState(false);
-
   let reportsTableRef = useRef();
+
+  let [offices, setOffices] = useState({});
+
+  useEffect(() => {
+    const fetchOffices = async () => {
+      let res = await getOffices();
+      if (res.success) {
+        res?.offices?.forEach((data) => {
+          offices[data.name] = { text: data.name };
+        });
+        setOffices(offices);
+      } else {
+        message.error("Failed to fetch offices");
+      }
+    };
+    fetchOffices();
+  }, []);
 
   const _getPerformance = async (query) => {
     let res = await getPerformance(query);
@@ -122,6 +137,7 @@ export default () => {
                       ? true
                       : false
                     : null,
+                  establishment: filter.establishment?.[0] || null,
                 });
                 return {
                   data: res.reports,
@@ -135,6 +151,9 @@ export default () => {
                 title: "Name",
                 width: 80,
                 dataIndex: "establishment",
+                filters: true,
+                filterMultiple: false,
+                valueEnum: offices,
               },
               {
                 title: "Issue",
@@ -168,7 +187,7 @@ export default () => {
                       icon={<EditOutlined />}
                       type="primary"
                       onClick={() => {
-                        setSelectedReport(entity);
+                        setSelectedReport({ mode: "reports", data: entity });
                         setUpdateReport(true);
                       }}
                     >
@@ -189,9 +208,15 @@ export default () => {
         </Col>
         <Col span={12}>
           <ProTable
-            request={async () => {
+            request={async (params, sorter, filter) => {
               try {
-                let res = await getComments();
+                let res = await getComments({
+                  remarks: filter?.remarks
+                    ? filter?.remarks?.[0] === "1"
+                      ? true
+                      : false
+                    : null,
+                });
                 return {
                   data: res.comments,
                 };
@@ -208,12 +233,37 @@ export default () => {
               {
                 title: "Remarks",
                 dataIndex: "remarks",
-                render: (dom) => (dom ? "Done" : "Pending"),
+                render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
+                filters: true,
+                filterMultiple: false,
+                valueEnum: {
+                  1: { text: "Done" },
+                  0: { text: "Pending" },
+                },
               },
               {
                 title: "Date",
                 dataIndex: "createdAt",
                 render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+                valueType: "dateTime",
+              },
+              {
+                title: "Actions",
+                render: (dom, entity) => {
+                  return (
+                    <Button
+                      key="button"
+                      icon={<EditOutlined />}
+                      type="primary"
+                      onClick={() => {
+                        setSelectedReport({ mode: "comments", data: entity });
+                        setUpdateReport(true);
+                      }}
+                    >
+                      Update
+                    </Button>
+                  );
+                },
               },
             ]}
             rowKey="key"
@@ -294,7 +344,7 @@ export default () => {
                   icon={<EditOutlined />}
                   type="primary"
                   onClick={() => {
-                    setSelectedReport(entity);
+                    setSelectedReport({ mode: "assigned-officer", data: entity });
                     setUpdateReport(true);
                   }}
                 >
@@ -316,10 +366,17 @@ export default () => {
   };
   console.log(user);
   return (
-    <PageContainer title={user.mode === "admin" ? "Dashboard" : user.name}>
+    <PageContainer
+      title={user.mode === "admin" ? "Dashboard" : user.name}
+      extra={<RangePicker />}
+    >
       <RespondentsModal
         state={respondentsModal}
         setState={setRespondentsModal}
+        onSeeRatings={(item) => {
+          setSeeRatings(true);
+          setSelectedReport(item);
+        }}
       />
       <UpdateReport
         state={updateReport}
@@ -335,6 +392,7 @@ export default () => {
       <Row gutter={10}>
         <Col span={12}>
           <Card
+            title={"Respondents"}
             extra={
               <Button type="primary" onClick={() => setRespondentsModal(true)}>
                 See respondents

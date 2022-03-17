@@ -3,9 +3,9 @@ import { Modal, Button } from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
 import moment from "moment";
 
-import { getReportedDepartment } from "../../../services/dashboard";
+import { getRespondents } from "../../../services/dashboard";
 
-export default ({ state, setState }) => {
+export default ({ state, setState, onSeeRatings }) => {
   return (
     <>
       <Modal
@@ -17,11 +17,14 @@ export default ({ state, setState }) => {
         width={1000}
       >
         <ProTable
-          request={async () => {
+          request={async (params, sorter, filter) => {
+            console.log(filter);
             try {
-              let res = await getReportedDepartment();
+              let res = await getRespondents({
+                raterType: filter.raterType?.[0] || null,
+              });
               return {
-                data: res.reports,
+                data: res.respondents,
               };
             } catch (err) {
               console.log(err);
@@ -36,6 +39,24 @@ export default ({ state, setState }) => {
             {
               title: "Type",
               dataIndex: "raterType",
+              filters: true,
+              filterMultiple: false,
+              valueEnum: {
+                Doctor: { text: "Doctor" },
+                Client: { text: "Client" },
+                "Company Employee": { text: "Company Employee" },
+                Visitor: { text: "Visitor" },
+              },
+            },
+            {
+              title: "Ratings",
+              render: (dom, entity) => {
+                return (
+                  <Button onClick={() => onSeeRatings(entity)}>
+                    See Ratings
+                  </Button>
+                );
+              },
             },
             {
               title: "Issue",
