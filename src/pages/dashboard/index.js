@@ -1,7 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Pie } from "@ant-design/plots";
-import { Col, Row, Card, Button } from "antd";
-import { DatePicker, Space } from "antd";
+import {
+  Col,
+  Row,
+  Card,
+  Button,
+  DatePicker,
+  TimePicker,
+  Select,
+  Space,
+  Radio,
+} from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
 import RespondentsModal from "./components/RespondentsModal";
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
@@ -19,6 +28,8 @@ import SeeRating from "./components/SeeRating";
 import store from "store";
 import { PageContainer } from "@ant-design/pro-layout";
 import { getOffices } from "../../services/office";
+
+const { Option } = Select;
 
 export default () => {
   let user = store.get("user");
@@ -384,10 +395,49 @@ export default () => {
       />
     );
   };
+
+  function PickerWithType({ type, onChange }) {
+    if (type === "time") return <TimePicker onChange={onChange} />;
+    if (type === "date") return <DatePicker onChange={onChange} />;
+    return <DatePicker picker={type} onChange={onChange} />;
+  }
+
+  function SwitchablePicker() {
+    const [type, setType] = useState("month");
+    return (
+      <Space>
+        <Radio.Group
+          options={[
+            {
+              label: "Month",
+              value: "month",
+            },
+            {
+              label: "Quarter",
+              value: "quarter",
+            },
+            {
+              label: "Year",
+              value: "year",
+            },
+          ]}
+          initialValue={type}
+          onChange={(data)=> {
+            console.log(data)
+            setType(data.target.value)
+          }}
+          optionType="button"
+          buttonStyle="solid"
+        />
+        <PickerWithType type={type} onChange={(value) => console.log(value)} />
+      </Space>
+    );
+  }
+
   return (
     <PageContainer
       title={user.mode === "admin" ? "Dashboard" : user.name}
-      extra={<RangePicker />}
+      extra={<SwitchablePicker />}
     >
       <RespondentsModal
         state={respondentsModal}

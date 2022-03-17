@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import defaultSettings from "../config/defaultSettings";
 const isDev = process.env.NODE_ENV === "development";
 import store from "store";
+import { routesIcon } from "../config/routesIcon";
 
 const loginPath = "/user/login";
 
@@ -53,6 +54,11 @@ export const layout = ({ initialState, setInitialState }) => {
       ) {
         history.push(loginPath);
       }
+    },
+    menu: {
+      request: async (params, defaultMenuData) => {
+        return routesIcon;
+      },
     },
     childrenRender: (children, props) => {
       return (

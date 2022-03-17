@@ -19,7 +19,6 @@ export default [
     ],
   },
   {
-    name: "Dashboard",
     path: "/admin/dashboard",
     component: "./dashboard",
   },
@@ -31,17 +30,14 @@ export default [
     hideInMenu: true,
   },
   {
-    name: "Offices",
     path: "/admin/offices",
     component: "./offices",
   },
   {
-    name: "Rankings",
     path: "/admin/ranking",
     component: "./ranking",
   },
   {
-    name: "Admin List",
     path: "/admin/admin-list",
     component: "./admins",
   },
