@@ -32,3 +32,25 @@ export async function getAdmins(query) {
     skipErrorHandler: true,
   });
 }
+
+export async function addAdmin(payload) {
+  return request(`${API_URL}/add-admin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: payload,
+    skipErrorHandler: true,
+  });
+}
+
+export async function removeScope(query) {
+  return request(`${API_URL}/remove-scope`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}

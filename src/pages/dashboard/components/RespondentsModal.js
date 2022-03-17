@@ -5,7 +5,7 @@ import moment from "moment";
 
 import { getRespondents } from "../../../services/dashboard";
 
-export default ({ state, setState, onSeeRatings }) => {
+export default ({ state, setState, onSeeRatings, user }) => {
   return (
     <>
       <Modal
@@ -18,10 +18,11 @@ export default ({ state, setState, onSeeRatings }) => {
       >
         <ProTable
           request={async (params, sorter, filter) => {
-            console.log(filter);
             try {
               let res = await getRespondents({
                 raterType: filter.raterType?.[0] || null,
+                establishment:
+                  user.mode === "assigned-officer" ? user?.name : undefined,
               });
               return {
                 data: res.respondents,

@@ -55,11 +55,13 @@ export default () => {
   };
 
   const _getRatertypes = async () => {
-    let res = await getRatertypes();
+    let res = await getRatertypes({
+      establishment: user?.mode === "assigned-officer" ? user?.name : undefined,
+    });
     if (res.success) {
       let temp = res?.raterTypes?.map((data) => {
         return {
-          type: data._id,
+          type: `${data.total} - ${data._id}`,
           value: data.total,
         };
       });
@@ -220,7 +222,7 @@ export default () => {
                 });
                 return {
                   data: res.comments,
-                  total: res?.total
+                  total: res?.total,
                 };
               } catch (err) {
                 console.log(err);
@@ -284,13 +286,20 @@ export default () => {
   const AssignedOfferTable = () => {
     return (
       <ProTable
-        request={async () => {
+        request={async (params, sorter, filter) => {
           try {
             let res = await getAssignedOfficeComments({
               officeName: user.name,
+              remarks: filter?.remarks
+                ? filter?.remarks?.[0] === "1"
+                  ? true
+                  : false
+                : null,
+              ...params,
             });
             return {
               data: res.comments,
+              total: res?.total,
             };
           } catch (err) {
             console.log(err);
@@ -330,7 +339,13 @@ export default () => {
           {
             title: "Remarks",
             dataIndex: "remarks",
-            render: (dom) => (dom ? "Done" : "Pending"),
+            render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
+            filters: true,
+            filterMultiple: false,
+            valueEnum: {
+              1: { text: "Done" },
+              0: { text: "Pending" },
+            },
           },
           {
             title: "Date",
@@ -361,7 +376,7 @@ export default () => {
         ]}
         rowKey="key"
         pagination={{
-          showQuickJumper: true,
+          pageSize: 10,
         }}
         search={false}
         dateFormatter="string"
@@ -369,7 +384,6 @@ export default () => {
       />
     );
   };
-  console.log(user);
   return (
     <PageContainer
       title={user.mode === "admin" ? "Dashboard" : user.name}
@@ -382,6 +396,7 @@ export default () => {
           setSeeRatings(true);
           setSelectedReport(item);
         }}
+        user={user}
       />
       <UpdateReport
         state={updateReport}
