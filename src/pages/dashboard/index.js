@@ -39,8 +39,8 @@ export default () => {
   let [updateReport, setUpdateReport] = useState(false);
   let [selectedReport, setSelectedReport] = useState({});
   let [seeRatings, setSeeRatings] = useState(false);
+  let [type, setType] = useState("month");
   let reportsTableRef = useRef();
-
   let [offices, setOffices] = useState({});
 
   useEffect(() => {
@@ -58,15 +58,20 @@ export default () => {
     fetchOffices();
   }, []);
 
-  const _getPerformance = async (query) => {
-    let res = await getPerformance(query);
+  const _getPerformance = async ({ overallFilter, startDate, endDate }) => {
+    let res = await getPerformance({
+      overallFilter: overallFilter ? JSON.stringify(overallFilter) : null,
+      startDate,
+      endDate,
+    });
     if (res.success) {
       setPerformance(res.rate);
     }
   };
 
-  const _getRatertypes = async () => {
+  const _getRatertypes = async ({ overallFilter }) => {
     let res = await getRatertypes({
+      overallFilter: overallFilter ? JSON.stringify(overallFilter) : null,
       establishment: user?.mode === "assigned-officer" ? user?.name : undefined,
     });
     if (res.success) {
@@ -81,12 +86,11 @@ export default () => {
   };
 
   useState(() => {
-    _getPerformance();
-    _getRatertypes();
+    _getPerformance({});
+    _getRatertypes({});
   }, []);
 
   const config = {
-    appendPadding: 10,
     data: raterTypes,
     angleField: "value",
     colorField: "type",
@@ -106,10 +110,6 @@ export default () => {
         type: "element-active",
       },
     ],
-  };
-
-  const gridStyle = {
-    textAlign: "center",
   };
 
   const getPercentage = function (input, index) {
@@ -141,6 +141,7 @@ export default () => {
           <ProTable
             actionRef={reportsTableRef}
             request={async (params, sorter, filter) => {
+              console.log(params);
               try {
                 let res = await getReportedDepartment({
                   remarks: filter?.remarks
@@ -167,12 +168,14 @@ export default () => {
                 filters: true,
                 filterMultiple: false,
                 valueEnum: offices,
+                search: false,
               },
               {
                 title: "Issue",
                 render: (dom, entity) => {
                   return <strong>{entity?.reports?.join(". ")}</strong>;
                 },
+                search: false,
               },
               {
                 title: "Remarks",
@@ -185,14 +188,18 @@ export default () => {
                   1: { text: "Done" },
                   0: { text: "Pending" },
                 },
+                search: false,
               },
               {
                 title: "Date",
                 dataIndex: "createdAt",
-                render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+                valueType: "date",
+                render: (dom, entity) =>
+                  `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
               },
               {
                 title: "Actions",
+                search: false,
                 render: (dom, entity) => {
                   return (
                     <Button
@@ -214,7 +221,9 @@ export default () => {
             pagination={{
               pageSize: 10,
             }}
-            search={false}
+            search={{
+              filterType: "light",
+            }}
             dateFormatter="string"
             headerTitle="Reported Department"
           />
@@ -244,6 +253,7 @@ export default () => {
                 title: "Customer Concerns",
                 width: 80,
                 dataIndex: "rateComment",
+                search: false,
               },
               {
                 title: "Remarks",
@@ -255,15 +265,18 @@ export default () => {
                   1: { text: "Done" },
                   0: { text: "Pending" },
                 },
+                search: false,
               },
               {
                 title: "Date",
                 dataIndex: "createdAt",
-                render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
-                valueType: "dateTime",
+                render: (dom, entity) =>
+                  `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
+                valueType: "date",
               },
               {
                 title: "Actions",
+                search: false,
                 render: (dom, entity) => {
                   return (
                     <Button
@@ -285,7 +298,9 @@ export default () => {
             pagination={{
               pageSize: 10,
             }}
-            search={false}
+            search={{
+              filterType: "light",
+            }}
             dateFormatter="string"
             headerTitle="Overall Comments"
           />{" "}
@@ -320,10 +335,12 @@ export default () => {
           {
             title: "Name",
             dataIndex: "fullname",
+            search: false
           },
           {
             title: "Ratings",
             title: "Reports",
+            search: false,
             render: (dom, entity) => {
               return (
                 <Button
@@ -340,12 +357,14 @@ export default () => {
           {
             title: "Comments",
             dataIndex: "rateComment",
+            search: false,
           },
           {
             title: "Reports",
             render: (dom, entity) => {
               return <strong>{entity?.reports?.join(". ")}</strong>;
             },
+            search: false,
           },
           {
             title: "Remarks",
@@ -357,14 +376,18 @@ export default () => {
               1: { text: "Done" },
               0: { text: "Pending" },
             },
+            search: false,
           },
           {
             title: "Date",
             dataIndex: "createdAt",
-            render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+            valueType: "date",
+            render: (dom, entity) =>
+              `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
           },
           {
             title: "Actions",
+            search: false,
             render: (dom, entity) => {
               return (
                 <Button
@@ -389,7 +412,9 @@ export default () => {
         pagination={{
           pageSize: 10,
         }}
-        search={false}
+        search={{
+          filterType: "light",
+        }}
         dateFormatter="string"
         headerTitle="Overall Comments"
       />
@@ -397,13 +422,10 @@ export default () => {
   };
 
   function PickerWithType({ type, onChange }) {
-    if (type === "time") return <TimePicker onChange={onChange} />;
-    if (type === "date") return <DatePicker onChange={onChange} />;
     return <DatePicker picker={type} onChange={onChange} />;
   }
 
   function SwitchablePicker() {
-    const [type, setType] = useState("month");
     return (
       <Space>
         <Radio.Group
@@ -422,17 +444,60 @@ export default () => {
             },
           ]}
           initialValue={type}
-          onChange={(data)=> {
-            console.log(data)
-            setType(data.target.value)
-          }}
+          onChange={(data) => setType(data.target.value)}
           optionType="button"
           buttonStyle="solid"
         />
-        <PickerWithType type={type} onChange={(value) => console.log(value)} />
+        <PickerWithType
+          type={type}
+          onChange={(value) => onSwitchablePickerChange(value, type)}
+        />
       </Space>
     );
   }
+
+  let onSwitchablePickerChange = (value, type) => {
+    let overallFilter = {};
+
+    if (type === "month") {
+      overallFilter = { type, year: value.year(), month: value.format("MM") };
+    }
+
+    if (type === "quarter") {
+      overallFilter = {
+        type,
+        year: value.year(),
+        startMonth: value.format("MM"),
+        endMonth: value.add(2, "M").format("MM"),
+      };
+    }
+
+    if (type === "year") {
+      overallFilter = {
+        type,
+        year: value.year(),
+      };
+    }
+
+    _getRatertypes({ overallFilter });
+    _getPerformance({ overallFilter });
+  };
+
+  const perfCardStyle = {
+    backgroundColor: "#F3A931",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  };
+
+  const perfPercetageStyle = {
+    fontSize: 30,
+    color: "white",
+  };
+
+  const perfLabelStyle = {
+    color: "white",
+  };
 
   return (
     <PageContainer
@@ -462,6 +527,7 @@ export default () => {
       <Row gutter={10}>
         <Col span={12}>
           <Card
+            style={{ height: "100%" }}
             title={"Respondents"}
             extra={
               <Button type="primary" onClick={() => setRespondentsModal(true)}>
@@ -477,43 +543,123 @@ export default () => {
             title="Performance"
             extra={<RangePicker onChange={onDateChange} />}
           >
-            <Card.Grid style={gridStyle}>
-              {" "}
-              {getPercentage(performance.rateOne, performance.Cnt)}% Courtesy
-            </Card.Grid>
-            <Card.Grid hoverable={false} style={gridStyle}>
-              {getPercentage(performance.rateTwo, performance.Cnt)}% Accuracy
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateThree, performance.Cnt)}%
-              Professionalism
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateFour, performance.Cnt)}%
-              Cleanliness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateFive, performance.Cnt)}% Health
-              Protocol
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateSix, performance.Cnt)}% Timeliness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateSeven, performance.Cnt)}% Service
-              Efficiency
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateEight, performance.Cnt)}% Fairness
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateNine, performance.Cnt)}% Overall
-              Services
-            </Card.Grid>
-            <Card.Grid style={gridStyle}>
-              {getPercentage(performance.rateTen, performance.Cnt)}%
-              Responsiveness
-            </Card.Grid>
+            <Row gutter={[5, 5]}>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Courtesy</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateOne, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Accuracy</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateTwo, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Professionalism</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateThree, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Cleanliness</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateFour, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Protocol</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateFive, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Timeliness</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateSix, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Service Efficiency</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateSeven, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Fairness</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateEight, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Timeliness</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateSix, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Overall Services</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateNine, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  title={<span style={perfLabelStyle}>Responsiveness</span>}
+                  style={perfCardStyle}
+                >
+                  <span style={perfPercetageStyle}>
+                    {getPercentage(performance.rateTen, performance.Cnt)}%
+                  </span>
+                </Card>
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>

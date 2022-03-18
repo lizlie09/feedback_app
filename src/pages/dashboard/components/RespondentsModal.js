@@ -23,6 +23,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
                 raterType: filter.raterType?.[0] || null,
                 establishment:
                   user.mode === "assigned-officer" ? user?.name : undefined,
+                ...params,
               });
               return {
                 data: res.respondents,
@@ -36,12 +37,14 @@ export default ({ state, setState, onSeeRatings, user }) => {
               title: "Full Name",
               width: 80,
               dataIndex: "fullname",
+              search: false,
             },
             {
               title: "Type",
               dataIndex: "raterType",
               filters: true,
               filterMultiple: false,
+              search: false,
               valueEnum: {
                 Doctor: { text: "Doctor" },
                 Client: { text: "Client" },
@@ -51,6 +54,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
             },
             {
               title: "Ratings",
+              search: false,
               render: (dom, entity) => {
                 return (
                   <Button onClick={() => onSeeRatings(entity)}>
@@ -61,6 +65,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
             },
             {
               title: "Issue",
+              search: false,
               render: (dom, entity) => {
                 return <strong>{entity?.reports?.join(". ")}</strong>;
               },
@@ -68,14 +73,18 @@ export default ({ state, setState, onSeeRatings, user }) => {
             {
               title: "Date",
               dataIndex: "createdAt",
-              render: (dom) => `${moment(dom).format("MMMM DD, YYYY")}`,
+              valueType: "date",
+              render: (dom, entity) =>
+                `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
             },
           ]}
           rowKey="key"
           pagination={{
             showQuickJumper: true,
           }}
-          search={false}
+          search={{
+            filterType: "light",
+          }}
           dateFormatter="string"
           height={400}
         />
