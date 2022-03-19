@@ -1,4 +1,5 @@
 import { request } from "umi";
+import store from "store";
 
 export async function login(payload) {
   return request(`${API_URL}/auth/login`, {
@@ -51,6 +52,19 @@ export async function removeScope(query) {
       "Content-Type": "application/json",
     },
     params: query,
+    skipErrorHandler: true,
+  });
+}
+
+export async function changePassword(payload) {
+  const token = store.get("token");
+  return request(`${API_URL}/change-password`, {
+    method: "POST",
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     skipErrorHandler: true,
   });
 }

@@ -1,20 +1,21 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { LogoutOutlined, KeyOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Menu, Spin } from "antd";
+import { Avatar, Menu, Spin, message } from "antd";
 import { history, useModel } from "umi";
 import { stringify } from "querystring";
 import HeaderDropdown from "../HeaderDropdown";
 import styles from "./index.less";
-
-/**
- * 退出登录，并且将当前的 url 保存
- */
+import { changePassword } from "@/services/user";
+import ProForm, { ProFormText, ModalForm } from "@ant-design/pro-form";
+import store from "store";
 const loginOut = async () => {
   // await outLogin();
   const { query = {}, search, pathname } = history.location;
   const { redirect } = query; // Note: There may be security issues, please note
 
   if (window.location.pathname !== "/user/login" && !redirect) {
+    store.remove("user");
+    store.remove("token");
     history.replace({
       pathname: "/user/login",
       // search: stringify({
@@ -25,10 +26,16 @@ const loginOut = async () => {
 };
 
 const AvatarDropdown = ({ menu }) => {
+  let [passwordModal, setPasswordModal] = useState(false);
   const { initialState, setInitialState } = useModel("@@initialState");
   const onMenuClick = useCallback(
     (event) => {
       const { key } = event;
+
+      if (key === "change-password") {
+        setPasswordModal(true);
+        return;
+      }
 
       if (key === "logout") {
         setInitialState((s) => ({ ...s, currentUser: undefined }));
@@ -62,9 +69,59 @@ const AvatarDropdown = ({ menu }) => {
     return loading;
   }
 
+  const ChangePassword = () => {
+    return (
+      <ModalForm
+        title="Change Password"
+        visible={passwordModal}
+        width={300}
+        modalProps={{
+          onCancel: () => {
+            console.log("Ayo");
+            setPasswordModal(false);
+          },
+        }}
+        onFinish={async (values) => {
+          if (values?.newPassword !== values?.confirmPassword) {
+            message.error("New and confirm password don't match.");
+            return;
+          }
+
+          let res = await changePassword({
+            newPassword: values?.newPassword,
+            oldPassword: values?.oldPassword,
+          });
+          if (res.success) {
+            message.success(res.message);
+            setPasswordModal(false);
+          } else {
+            message.error(res.message);
+          }
+        }}
+      >
+        <ProFormText.Password
+          width="md"
+          name="oldPassword"
+          label="Old Password"
+        />
+        <ProFormText.Password
+          width="md"
+          name="newPassword"
+          label="New Password"
+        />
+        <ProFormText.Password
+          width="md"
+          name="confirmPassword"
+          label="Confirm New Password"
+        />
+      </ModalForm>
+    );
+  };
+
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      <Menu.Item key="logout">
+      <Menu.Item key="change-password">
+        <ChangePassword />
         <KeyOutlined />
         Change Password
       </Menu.Item>
