@@ -207,6 +207,13 @@ const Login = () => {
       </Row>
       <Row style={{ marginTop: 50 }} gutter={100}>
         <Col span={12}>
+          <img
+            src={"../assets/images/rate.svg"}
+            style={{
+              height: 250,
+              marginBottom: 50,
+            }}
+          />
           <ProForm
             style={{}}
             onFinish={(values) => {
@@ -256,6 +263,13 @@ const Login = () => {
           </ProForm>
         </Col>
         <Col span={12}>
+          <img
+            src={"../assets/images/admin.svg"}
+            style={{
+              height: 250,
+              marginBottom: 50,
+            }}
+          />
           <Title level={3}>Administrator</Title>
           <Tabs defaultActiveKey="1" tabRef={tabRef}>
             <TabPane tab="Log In" key="1">

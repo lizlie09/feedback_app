@@ -41,8 +41,8 @@ export default ({ state, setState, actionRef }) => {
             ]}
           />
           <ProFormText
-            name="firstname"
-            label="First Name"
+            name="lastname"
+            label="Last Name"
             placeholder=""
             rules={[
               {
@@ -51,8 +51,8 @@ export default ({ state, setState, actionRef }) => {
             ]}
           />
           <ProFormText
-            name="lastname"
-            label="Last Name"
+            name="firstname"
+            label="First Name"
             placeholder=""
             rules={[
               {
