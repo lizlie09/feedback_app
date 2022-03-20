@@ -13,6 +13,7 @@ export async function login(payload) {
 }
 
 export async function signup(payload) {
+  const token = store.get("token");
   return request(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: {
@@ -24,10 +25,12 @@ export async function signup(payload) {
 }
 
 export async function getAdmins(query) {
+  const token = store.get("token");
   return request(`${API_URL}/get-admins`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     params: query,
     skipErrorHandler: true,
@@ -35,10 +38,12 @@ export async function getAdmins(query) {
 }
 
 export async function addAdmin(payload) {
+  const token = store.get("token");
   return request(`${API_URL}/add-admin`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     data: payload,
     skipErrorHandler: true,
@@ -46,10 +51,12 @@ export async function addAdmin(payload) {
 }
 
 export async function removeScope(query) {
+  const token = store.get("token");
   return request(`${API_URL}/remove-scope`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     params: query,
     skipErrorHandler: true,

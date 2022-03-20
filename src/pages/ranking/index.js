@@ -1,30 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Pie } from "@ant-design/plots";
 import { Col, Row, Card, Button } from "antd";
 import { DatePicker, Space } from "antd";
 import ProTable, { TableDropdown } from "@ant-design/pro-table";
 import { getRankings } from "../../services/ranking";
 import moment from "moment";
+import ReactToPrint from "react-to-print";
+import { PageContainer } from "@ant-design/pro-layout";
 const { RangePicker } = DatePicker;
 
-export default () => {
-  const getPercentage = (rate, increment) => {
-    var getindex,
-      totalindex,
-      gettotal,
-      total = 0;
-    getindex = parseInt(increment) * 5;
-    totalindex = parseInt(getindex) * 10;
-    gettotal = parseFloat(rate / totalindex).toFixed(2);
-    total = (gettotal * 100).toFixed(0);
-    return total;
-  };
-
+export default React.forwardRef((props, ref) => {
   return (
-    <div>
+    <PageContainer
+      extra={
+        <ReactToPrint
+          trigger={() => <Button type="primary">Print this out!</Button>}
+          content={() => ref.current}
+        />
+      }
+    >
+      <ComponentToPrint ref={(el) => (ref = el)} />
+    </PageContainer>
+  );
+});
+
+export const TableToPrint = React.forwardRef((props, ref) => {
+  return <ComponentToPrint ref={ref} />;
+});
+
+class ComponentToPrint extends React.Component {
+  render() {
+    const getPercentage = (rate, increment) => {
+      var getindex,
+        totalindex,
+        gettotal,
+        total = 0;
+      getindex = parseInt(increment) * 5;
+      totalindex = parseInt(getindex) * 10;
+      gettotal = parseFloat(rate / totalindex).toFixed(2);
+      total = (gettotal * 100).toFixed(0);
+      return total;
+    };
+
+    return (
       <ProTable
+        ref={(el) => (componentRef = el)}
         request={async (params, sorter, filter) => {
-          console.log(filter?.year?.[0])
+          console.log(filter?.year?.[0]);
           try {
             let res = await getRankings({
               year: filter?.year?.[0] || undefined,
@@ -70,6 +92,6 @@ export default () => {
         dateFormatter="string"
         headerTitle="Offices"
       />
-    </div>
-  );
-};
+    );
+  }
+}

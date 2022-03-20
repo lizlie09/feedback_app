@@ -43,6 +43,7 @@ export default () => {
   let reportsTableRef = useRef();
   let [offices, setOffices] = useState({});
 
+
   useEffect(() => {
     const fetchOffices = async () => {
       let res = await getOffices();
