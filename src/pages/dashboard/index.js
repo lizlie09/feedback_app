@@ -277,7 +277,7 @@ export default () => {
             scroll={{ x: 1000 }}
             columns={[
               {
-                title: "Customer Concerns",
+                title: "Comments and Suggestions",
                 width: 80,
                 dataIndex: "rateComment",
                 search: false,
