@@ -120,7 +120,7 @@ export default () => {
         }}
         search={false}
         dateFormatter="string"
-        headerTitle="Offices"
+        headerTitle="List of Administrators"
       />
     </div>
   );

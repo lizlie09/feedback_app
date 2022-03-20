@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Pie } from "@ant-design/plots";
 import { Col, Row, Card, Button } from "antd";
 import { DatePicker, Space } from "antd";
@@ -8,7 +8,7 @@ import { PageContainer } from "@ant-design/pro-layout";
 import { history, Link } from "umi";
 const { RangePicker } = DatePicker;
 
-export default React.forwardRef((props, ref) => {
+export default () => {
   const getPercentage = (rate, increment) => {
     var getindex,
       totalindex,
@@ -37,8 +37,8 @@ export default React.forwardRef((props, ref) => {
       }
     >
       <ProTable
-        ref={(el) => (componentRef = el)}
         request={async (params, sorter, filter) => {
+          console.log(filter?.year?.[0]);
           try {
             let res = await getRankings({
               year: filter?.year?.[0] || undefined,
@@ -82,8 +82,8 @@ export default React.forwardRef((props, ref) => {
         }}
         search={false}
         dateFormatter="string"
-        headerTitle="Rankings"
+        headerTitle="Overall Rankings of Offices"
       />
     </PageContainer>
   );
-});
+};
