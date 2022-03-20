@@ -68,7 +68,7 @@ export default () => {
         }}
         search={false}
         dateFormatter="string"
-        headerTitle="Overall Rankings"
+        headerTitle="Overall Rankings of Offices"
       />
     </div>
   );
