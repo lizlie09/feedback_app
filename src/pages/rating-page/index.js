@@ -10,6 +10,8 @@ import { rate, report } from "@/services/rate";
 import { history } from "umi";
 import { useLocation } from "react-router-dom";
 import { getOffices } from "../../services/office";
+import { PageContainer } from "@ant-design/pro-layout";
+import { SmileOutlined } from "@ant-design/icons";
 
 const { TabPane } = Tabs;
 
@@ -247,25 +249,40 @@ export default () => {
   };
 
   return (
-    <div>
-      <h1>Hello, {fullname}</h1>
-      <h4>{raterType}</h4>
-      <Card>
-        <Tabs
-          defaultActiveKey="1"
-          style={{ marginBottom: 32 }}
-          destroyInactiveTabPane={true}
-        >
-          <TabPane tab="Click to Rate" key="1">
-            <RatingView />
-          </TabPane>
-          {raterType !== "Visitor" && (
-            <TabPane tab="Click to Report" key="2">
-              <ReportView />
-            </TabPane>
-          )}
-        </Tabs>
-      </Card>
-    </div>
+    <PageContainer
+      avatar={<SmileOutlined color="black" />}
+      title={<strong>Hello, {fullname}</strong>}
+      subTitle={`(${raterType})`}
+    >
+      <Row gutter={20} align="middle">
+        <Col span={8}>
+          <img
+            src={"../assets/images/rate1.svg"}
+            style={{
+              height: "70%",
+              alignSelf: "center",
+            }}
+          />
+        </Col>
+        <Col span={16}>
+          <Card>
+            <Tabs
+              defaultActiveKey="1"
+              style={{ marginBottom: 32 }}
+              destroyInactiveTabPane={true}
+            >
+              <TabPane tab="Click to Rate" key="1">
+                <RatingView />
+              </TabPane>
+              {raterType !== "Visitor" && (
+                <TabPane tab="Click to Report" key="2">
+                  <ReportView />
+                </TabPane>
+              )}
+            </Tabs>
+          </Card>
+        </Col>
+      </Row>
+    </PageContainer>
   );
 };

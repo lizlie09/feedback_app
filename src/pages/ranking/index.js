@@ -90,7 +90,7 @@ class ComponentToPrint extends React.Component {
         }}
         search={false}
         dateFormatter="string"
-        headerTitle="Offices"
+        headerTitle="Rankings"
       />
     );
   }

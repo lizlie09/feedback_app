@@ -27,7 +27,7 @@ export default ({ state, setState, actionRef, selectedReport }) => {
           try {
             const res = await updateReport({
               _id: data._id,
-              remarks: values.remarks,
+              ...values,
             });
 
             if (res.success) {

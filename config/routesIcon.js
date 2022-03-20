@@ -5,7 +5,7 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 
-export const routesIcon = [
+export const adminIcons = [
   {
     name: "Dashboard",
     path: "/admin/dashboard",
@@ -26,5 +26,14 @@ export const routesIcon = [
     name: "Admin List",
     path: "/admin/admin-list",
     icon: <UsergroupAddOutlined />,
+  },
+];
+
+export const assignedOfferIcons = [
+  {
+    name: "Dashboard",
+    path: "/admin/dashboard",
+    icon: <PieChartOutlined />,
+    component: "./admin/dashboard",
   },
 ];

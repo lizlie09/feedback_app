@@ -65,6 +65,7 @@ const Login = () => {
         <ProFormRadio.Group
           name="mode"
           radioType="button"
+          buttonStyle="solid"
           options={[
             {
               label: "Administrator",

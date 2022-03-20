@@ -28,40 +28,31 @@ import SeeRating from "./components/SeeRating";
 import store from "store";
 import { PageContainer } from "@ant-design/pro-layout";
 import { getOffices } from "../../services/office";
+import NoData from "@/components/NoData";
 
 const { Option } = Select;
 
 export default () => {
-  let user = store.get("user");
-  let [performance, setPerformance] = useState({});
-  let [raterTypes, setRaterTypes] = useState([]);
-  let [respondentsModal, setRespondentsModal] = useState(false);
-  let [updateReport, setUpdateReport] = useState(false);
-  let [selectedReport, setSelectedReport] = useState({});
-  let [seeRatings, setSeeRatings] = useState(false);
-  let [type, setType] = useState("month");
-  let reportsTableRef = useRef();
-  let [offices, setOffices] = useState({});
+  const user = store.get("user");
+  const reportsTableRef = useRef();
+  const commentsTableRef = useRef();
+  const overallCommentsTableRef = useRef();
 
-
-  useEffect(() => {
-    const fetchOffices = async () => {
-      let res = await getOffices();
-      if (res.success) {
-        res?.offices?.forEach((data) => {
-          offices[data.name] = { text: data.name };
-        });
-        setOffices(offices);
-      } else {
-        message.error("Failed to fetch offices");
-      }
-    };
-    fetchOffices();
-  }, []);
+  const [performance, setPerformance] = useState({});
+  const [selectedReport, setSelectedReport] = useState({});
+  const [offices, setOffices] = useState({});
+  const [raterTypes, setRaterTypes] = useState([]);
+  const [respondentsModal, setRespondentsModal] = useState(false);
+  const [updateReport, setUpdateReport] = useState(false);
+  const [seeRatings, setSeeRatings] = useState(false);
+  const [type, setType] = useState("month");
+  const [overallFilterDate, setOverallFilterDate] = useState("");
+  const [overallFilter, setOverallFilter] = useState(null);
 
   const _getPerformance = async ({ overallFilter, startDate, endDate }) => {
     let res = await getPerformance({
       overallFilter: overallFilter ? JSON.stringify(overallFilter) : null,
+      establishment: user?.mode === "assigned-officer" ? user?.name : undefined,
       startDate,
       endDate,
     });
@@ -86,9 +77,28 @@ export default () => {
     }
   };
 
+  const _fetchOffices = async () => {
+    let res = await getOffices();
+    if (res.success) {
+      res?.offices?.forEach((data) => {
+        offices[data.name] = { text: data.name };
+      });
+      setOffices(offices);
+    } else {
+      message.error("Failed to fetch offices");
+    }
+  };
+
   useState(() => {
     _getPerformance({});
+  }, []);
+
+  useState(() => {
     _getRatertypes({});
+  }, []);
+
+  useState(() => {
+    _fetchOffices();
   }, []);
 
   const config = {
@@ -135,7 +145,7 @@ export default () => {
     });
   };
 
-  let AdminTable = () => {
+  const AdminTable = () => {
     return (
       <Row gutter={10}>
         <Col span={12}>
@@ -145,6 +155,9 @@ export default () => {
               console.log(params);
               try {
                 let res = await getReportedDepartment({
+                  overallFilter: overallFilter
+                    ? JSON.stringify(overallFilter)
+                    : null,
                   remarks: filter?.remarks
                     ? filter?.remarks?.[0] === "1"
                       ? true
@@ -161,6 +174,7 @@ export default () => {
                 console.log(err);
               }
             }}
+            scroll={{ x: 1000 }}
             columns={[
               {
                 title: "Name",
@@ -201,6 +215,8 @@ export default () => {
               {
                 title: "Actions",
                 search: false,
+                fixed: "right",
+                width: 120,
                 render: (dom, entity) => {
                   return (
                     <Button
@@ -231,9 +247,13 @@ export default () => {
         </Col>
         <Col span={12}>
           <ProTable
+            actionRef={commentsTableRef}
             request={async (params, sorter, filter) => {
               try {
                 let res = await getComments({
+                  overallFilter: overallFilter
+                    ? JSON.stringify(overallFilter)
+                    : null,
                   remarks: filter?.remarks
                     ? filter?.remarks?.[0] === "1"
                       ? true
@@ -249,6 +269,7 @@ export default () => {
                 console.log(err);
               }
             }}
+            scroll={{ x: 1000 }}
             columns={[
               {
                 title: "Customer Concerns",
@@ -277,7 +298,9 @@ export default () => {
               },
               {
                 title: "Actions",
+                fixed: "right",
                 search: false,
+                width: 120,
                 render: (dom, entity) => {
                   return (
                     <Button
@@ -316,6 +339,9 @@ export default () => {
         request={async (params, sorter, filter) => {
           try {
             let res = await getAssignedOfficeComments({
+              overallFilter: overallFilter
+              ? JSON.stringify(overallFilter)
+              : null,
               officeName: user.name,
               remarks: filter?.remarks
                 ? filter?.remarks?.[0] === "1"
@@ -336,7 +362,7 @@ export default () => {
           {
             title: "Name",
             dataIndex: "fullname",
-            search: false
+            search: false,
           },
           {
             title: "Ratings",
@@ -422,9 +448,127 @@ export default () => {
     );
   };
 
-  function PickerWithType({ type, onChange }) {
-    return <DatePicker picker={type} onChange={onChange} />;
-  }
+  const Performance = () => {
+    return (
+      <Row gutter={[5, 5]}>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Courtesy</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateOne, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Accuracy</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateTwo, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Professionalism</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateThree, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Cleanliness</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateFour, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Protocol</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateFive, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Timeliness</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateSix, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Service Efficiency</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateSeven, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Fairness</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateEight, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Timeliness</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateSix, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Overall Services</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateNine, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card
+            title={<span style={perfLabelStyle}>Responsiveness</span>}
+            style={perfCardStyle}
+          >
+            <span style={perfPercetageStyle}>
+              {getPercentage(performance.rateTen, performance.Cnt)}%
+            </span>
+          </Card>
+        </Col>
+      </Row>
+    );
+  };
 
   function SwitchablePicker() {
     return (
@@ -444,14 +588,18 @@ export default () => {
               value: "year",
             },
           ]}
-          initialValue={type}
+          defaultValue={type}
           onChange={(data) => setType(data.target.value)}
           optionType="button"
           buttonStyle="solid"
         />
-        <PickerWithType
-          type={type}
-          onChange={(value) => onSwitchablePickerChange(value, type)}
+        <DatePicker
+          picker={type}
+          defaultValue={overallFilterDate}
+          onChange={(value) => {
+            setOverallFilterDate(value);
+            onSwitchablePickerChange(value, type);
+          }}
         />
       </Space>
     );
@@ -482,6 +630,7 @@ export default () => {
 
     _getRatertypes({ overallFilter });
     _getPerformance({ overallFilter });
+    setOverallFilter(overallFilter);
   };
 
   const perfCardStyle = {
@@ -505,30 +654,35 @@ export default () => {
       title={user.mode === "admin" ? "Dashboard" : user.name}
       extra={<SwitchablePicker />}
     >
-      <RespondentsModal
-        state={respondentsModal}
-        setState={setRespondentsModal}
-        onSeeRatings={(item) => {
-          setSeeRatings(true);
-          setSelectedReport(item);
-        }}
-        user={user}
-      />
-      <UpdateReport
-        state={updateReport}
-        setState={setUpdateReport}
-        selectedReport={selectedReport}
-        actionRef={reportsTableRef}
-      />
-      <SeeRating
-        state={seeRatings}
-        setState={setSeeRatings}
-        comment={selectedReport}
-      />
+      {respondentsModal && (
+        <RespondentsModal
+          state={respondentsModal}
+          setState={setRespondentsModal}
+          onSeeRatings={(item) => {
+            setSeeRatings(true);
+            setSelectedReport(item);
+          }}
+          user={user}
+        />
+      )}
+      {updateReport && (
+        <UpdateReport
+          state={updateReport}
+          setState={setUpdateReport}
+          selectedReport={selectedReport}
+          actionRef={reportsTableRef}
+        />
+      )}
+      {seeRatings && (
+        <SeeRating
+          state={seeRatings}
+          setState={setSeeRatings}
+          comment={selectedReport}
+        />
+      )}
       <Row gutter={10}>
         <Col span={12}>
           <Card
-            style={{ height: "100%" }}
             title={"Respondents"}
             extra={
               <Button type="primary" onClick={() => setRespondentsModal(true)}>
@@ -536,7 +690,7 @@ export default () => {
               </Button>
             }
           >
-            <Pie {...config} />
+            {raterTypes.length > 0 ? <Pie {...config} /> : <NoData />}
           </Card>
         </Col>
         <Col span={12}>
@@ -544,123 +698,7 @@ export default () => {
             title="Performance"
             extra={<RangePicker onChange={onDateChange} />}
           >
-            <Row gutter={[5, 5]}>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Courtesy</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateOne, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Accuracy</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateTwo, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Professionalism</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateThree, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Cleanliness</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateFour, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Protocol</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateFive, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Timeliness</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateSix, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Service Efficiency</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateSeven, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Fairness</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateEight, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Timeliness</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateSix, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Overall Services</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateNine, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card
-                  title={<span style={perfLabelStyle}>Responsiveness</span>}
-                  style={perfCardStyle}
-                >
-                  <span style={perfPercetageStyle}>
-                    {getPercentage(performance.rateTen, performance.Cnt)}%
-                  </span>
-                </Card>
-              </Col>
-            </Row>
+            {performance?.Cnt ? <Performance /> : <NoData />}
           </Card>
         </Col>
       </Row>
