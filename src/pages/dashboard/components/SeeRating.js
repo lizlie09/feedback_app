@@ -51,7 +51,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star2"
-              label="Cleanliness"
+              label="Accuracy"
               disabled
             />
           </Col>
@@ -63,7 +63,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star3"
-              label="Ground Landscaping"
+              label="Professionalism"
               disabled
             />
             <ProFormRate
@@ -73,7 +73,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star4"
-              label="Water System"
+              label="Cleanliness"
               disabled
             />
           </Col>
@@ -85,7 +85,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star5"
-              label="Biosecurity"
+              label="Health Protocol"
               disabled
             />
             <ProFormRate
@@ -95,7 +95,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star6"
-              label="Responsiveness"
+              label="Timeliness"
               disabled
             />
           </Col>
@@ -107,7 +107,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star7"
-              label="Health Protocol"
+              label="Service Efficiency"
               disabled
             />
             <ProFormRate
@@ -117,7 +117,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star8"
-              label="Painted Walls"
+              label="Fairness"
               disabled
             />
           </Col>
@@ -129,7 +129,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star9"
-              label="Adequate Lightning"
+              label="Overall Services"
               disabled
             />
             <ProFormRate
@@ -139,7 +139,7 @@ export default ({ state, setState, comment }) => {
                 },
               ]}
               name="star10"
-              label="Garbage Bin Labeled"
+              label="Responsiveness"
               disabled
             />
           </Col>
