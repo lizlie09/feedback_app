@@ -65,6 +65,7 @@ const Login = () => {
         <ProFormRadio.Group
           name="mode"
           radioType="button"
+          buttonStyle="solid"
           options={[
             {
               label: "Administrator",
@@ -205,7 +206,7 @@ const Login = () => {
           <h3> TSC Breeder farm. External farm of San Miguel foods INC</h3>
         </Col>
       </Row>
-      <Row style={{ marginTop: 50 }} gutter={100}>
+      <Row style={{ marginTop: 50 }} gutter={200}>
         <Col span={12}>
           <img
             src={"../assets/images/rate.svg"}
@@ -271,7 +272,11 @@ const Login = () => {
             }}
           />
           <Title level={3}>Administrator</Title>
-          <Tabs defaultActiveKey="1" tabRef={tabRef}>
+          <Tabs
+            defaultActiveKey="1"
+            tabRef={tabRef}
+            style={{ marginBottom: 20 }}
+          >
             <TabPane tab="Log In" key="1">
               <LoginForm />
             </TabPane>

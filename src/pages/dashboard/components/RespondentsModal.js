@@ -56,11 +56,13 @@ export default ({ state, setState, onSeeRatings, user }) => {
               title: "Ratings",
               search: false,
               render: (dom, entity) => {
-                return (
-                  <Button onClick={() => onSeeRatings(entity)}>
-                    See Ratings
-                  </Button>
-                );
+                if (entity?.rate) {
+                  return (
+                    <Button onClick={() => onSeeRatings(entity)}>
+                      See Ratings
+                    </Button>
+                  );
+                }
               },
             },
             {

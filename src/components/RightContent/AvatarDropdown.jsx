@@ -73,11 +73,10 @@ const AvatarDropdown = ({ menu }) => {
     return (
       <ModalForm
         title="Change Password"
-        visible={passwordModal}
         width={300}
+        visible={passwordModal}
         modalProps={{
           onCancel: () => {
-            console.log("Ayo");
             setPasswordModal(false);
           },
         }}

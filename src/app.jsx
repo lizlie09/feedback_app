@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import defaultSettings from "../config/defaultSettings";
 const isDev = process.env.NODE_ENV === "development";
 import store from "store";
-import { routesIcon } from "../config/routesIcon";
+import { adminIcons, assignedOfferIcons } from "../config/routesIcon";
 
 const loginPath = "/user/login";
 
@@ -56,8 +56,10 @@ export const layout = ({ initialState, setInitialState }) => {
       }
     },
     menu: {
+      params: initialState,
       request: async (params, defaultMenuData) => {
-        return routesIcon;
+        let { mode } = store.get('user');
+        return mode === "admin" ? adminIcons : null;
       },
     },
     childrenRender: (children, props) => {
