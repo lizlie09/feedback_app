@@ -218,7 +218,6 @@ const Login = () => {
           <ProForm
             style={{}}
             onFinish={(values) => {
-              console.log(values);
               history.push("/rating-page", values);
             }}
             submitter={{

@@ -38,6 +38,20 @@ export default [
     component: "./ranking",
   },
   {
+    path: "/admin/print/ranking",
+    component: "./ranking",
+    layout: false,
+    menuRender: false,
+    hideInMenu: true,
+  },
+  {
+    path: "/admin/print/dashboard",
+    component: "./dashboard",
+    layout: false,
+    menuRender: false,
+    hideInMenu: true,
+  },
+  {
     path: "/admin/admin-list",
     component: "./admins",
   },
