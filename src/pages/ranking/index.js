@@ -25,7 +25,7 @@ export default () => {
   return (
     <PageContainer
       extra={
-        location.pathname === "/admin/print/ranking" ? (
+        location.pathname.includes("/admin/print/ranking") ? (
           <Button type="danger" onClick={() => window.print()}>
             Print Now
           </Button>

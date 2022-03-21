@@ -604,7 +604,7 @@ export default () => {
             onSwitchablePickerChange(value, type);
           }}
         />
-        {location.pathname === "/admin/print/dashboard" ? (
+        {location.pathname.includes("/admin/print/dashboard") ? (
           <Button
             type="danger"
             icon={<PrinterOutlined />}
@@ -651,7 +651,7 @@ export default () => {
     setOverallFilter(overallFilter);
   };
 
-  if (location.pathname === "/admin/print/dashboard") {
+  if (location.pathname.includes("/admin/print/dashboard")) {
     config.label = {
       type: "outer",
       content: "{name} {percentage}",
