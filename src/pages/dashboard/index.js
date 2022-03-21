@@ -191,7 +191,7 @@ export default () => {
                 search: false,
               },
               {
-                title: "Issue",
+                title: "Issues",
                 render: (dom, entity) => {
                   return <strong>{entity?.reports?.join(". ")}</strong>;
                 },
@@ -247,7 +247,7 @@ export default () => {
               filterType: "light",
             }}
             dateFormatter="string"
-            headerTitle="Reported Department"
+            headerTitle="Reported Offices"
           />
         </Col>
         <Col span={12}>
@@ -331,7 +331,7 @@ export default () => {
               filterType: "light",
             }}
             dateFormatter="string"
-            headerTitle="Overall Comments"
+            headerTitle="Overall Comments and Suggestions"
           />{" "}
         </Col>
       </Row>
@@ -371,7 +371,7 @@ export default () => {
           },
           {
             title: "Ratings",
-            title: "Reports",
+            dataIndex: "ratings",
             search: false,
             render: (dom, entity) => {
               return (
@@ -387,7 +387,7 @@ export default () => {
             },
           },
           {
-            title: "Comments",
+            title: "Comments and Suggestions",
             dataIndex: "rateComment",
             search: false,
           },
@@ -448,7 +448,7 @@ export default () => {
           filterType: "light",
         }}
         dateFormatter="string"
-        headerTitle="Overall Comments"
+        headerTitle="Overall Rating/Reports/Comments and Suggestions"
       />
     );
   };

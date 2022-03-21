@@ -40,7 +40,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
               search: false,
             },
             {
-              title: "Type",
+              title: "User Type",
               dataIndex: "raterType",
               filters: true,
               filterMultiple: false,
@@ -66,7 +66,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
               },
             },
             {
-              title: "Issue",
+              title: "Issues",
               search: false,
               render: (dom, entity) => {
                 return <strong>{entity?.reports?.join(". ")}</strong>;

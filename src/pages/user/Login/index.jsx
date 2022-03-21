@@ -31,7 +31,7 @@ const Login = () => {
       const res = await login(values);
 
       if (res.success) {
-        message.success("Welcome : D");
+        message.success("Welcome");
         await fetchUserInfo(res.user, res.token, values.mode);
 
         if (!history) return;
@@ -211,7 +211,7 @@ const Login = () => {
           <img
             src={"../assets/images/rate.svg"}
             style={{
-              height: 250,
+              height: 200,
               marginBottom: 50,
             }}
           />
@@ -266,7 +266,7 @@ const Login = () => {
           <img
             src={"../assets/images/admin.svg"}
             style={{
-              height: 250,
+              height: 200,
               marginBottom: 50,
             }}
           />
