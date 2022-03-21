@@ -278,7 +278,7 @@ export default () => {
             columns={[
               {
                 title: "Comments and Suggestions",
-                width: 80,
+                width: 400,
                 dataIndex: "rateComment",
                 search: false,
               },

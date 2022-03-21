@@ -26,7 +26,6 @@ const loginOut = async () => {
 };
 
 const AvatarDropdown = ({ menu }) => {
-  let [passwordModal, setPasswordModal] = useState(false);
   const { initialState, setInitialState } = useModel("@@initialState");
   const onMenuClick = useCallback(
     (event) => {
@@ -69,16 +68,14 @@ const AvatarDropdown = ({ menu }) => {
     return loading;
   }
 
-  const ChangePassword = () => {
+  const ChangePassword = ({ passwordModal, setPasswordModal }) => {
     return (
       <ModalForm
         title="Change Password"
         width={300}
         visible={passwordModal}
         modalProps={{
-          onCancel: () => {
-            setPasswordModal(false);
-          },
+          onCancel: () => setPasswordModal(false),
         }}
         onFinish={async (values) => {
           if (values?.newPassword !== values?.confirmPassword) {
@@ -102,25 +99,41 @@ const AvatarDropdown = ({ menu }) => {
           width="md"
           name="oldPassword"
           label="Old Password"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         />
         <ProFormText.Password
           width="md"
           name="newPassword"
           label="New Password"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         />
         <ProFormText.Password
           width="md"
           name="confirmPassword"
           label="Confirm New Password"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         />
       </ModalForm>
     );
   };
 
+  let [passwordModal, setPasswordModal] = useState(false);
+
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
       <Menu.Item key="change-password">
-        <ChangePassword />
         <KeyOutlined />
         Change Password
       </Menu.Item>
@@ -131,14 +144,22 @@ const AvatarDropdown = ({ menu }) => {
     </Menu>
   );
   return (
-    <HeaderDropdown overlay={menuHeaderDropdown}>
-      <span className={`${styles.action} ${styles.account}`}>
-        <UserOutlined style={{ marginRight: 10 }} />
-        <span className={`${styles.name} anticon`}>
-          {currentUser.firstname} {currentUser.lastname}
+    <>
+      {passwordModal && (
+        <ChangePassword
+          passwordModal={passwordModal}
+          setPasswordModal={setPasswordModal}
+        />
+      )}
+      <HeaderDropdown overlay={menuHeaderDropdown}>
+        <span className={`${styles.action} ${styles.account}`}>
+          <UserOutlined style={{ marginRight: 10 }} />
+          <span className={`${styles.name} anticon`}>
+            {currentUser.firstname} {currentUser.lastname}
+          </span>
         </span>
-      </span>
-    </HeaderDropdown>
+      </HeaderDropdown>
+    </>
   );
 };
 

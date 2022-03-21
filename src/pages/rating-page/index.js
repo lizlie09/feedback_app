@@ -32,6 +32,14 @@ export default () => {
     fetchOffices();
   }, []);
 
+  const starSpan = {
+    xs: 12,
+    sm: 12,
+    md: 12,
+    lg: 6,
+    xl: 6,
+  };
+
   const RatingView = () => {
     return (
       <Card>
@@ -72,8 +80,14 @@ export default () => {
             <Tag color="gold">1 Stars - Very Dissatisfied</Tag>
           </Row>
           <div style={{ height: 20 }} />
-          <Row gutter={24}>
-            <Col span={5}>
+          <Row>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -83,6 +97,14 @@ export default () => {
                 name="star1"
                 label="Courtesy"
               />
+            </Col>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -93,7 +115,13 @@ export default () => {
                 label="Accuracy"
               />
             </Col>
-            <Col span={5}>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -103,6 +131,14 @@ export default () => {
                 name="star3"
                 label="Professionalism"
               />
+            </Col>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -113,7 +149,13 @@ export default () => {
                 label="Cleanliness"
               />
             </Col>
-            <Col span={5}>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -123,6 +165,14 @@ export default () => {
                 name="star5"
                 label="Health Protocol"
               />
+            </Col>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -133,7 +183,13 @@ export default () => {
                 label="Timeliness"
               />
             </Col>
-            <Col span={5}>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -143,6 +199,14 @@ export default () => {
                 name="star7"
                 label="Service Efficiency"
               />
+            </Col>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -153,7 +217,13 @@ export default () => {
                 label="Fairness"
               />
             </Col>
-            <Col span={4}>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -163,6 +233,14 @@ export default () => {
                 name="star9"
                 label="Overall Services"
               />
+            </Col>
+            <Col
+              xs={starSpan.xs}
+              sm={starSpan.sm}
+              md={starSpan.md}
+              lg={starSpan.lg}
+              xl={starSpan.xl}
+            >
               <ProFormRate
                 rules={[
                   {
@@ -255,16 +333,24 @@ export default () => {
       subTitle={`(${raterType})`}
     >
       <Row gutter={20} align="middle">
-        <Col span={8}>
+        <Col
+          xs={24}
+          sm={24}
+          md={24}
+          lg={8}
+          xl={8}
+        >
           <img
             src={"../assets/images/rate1.svg"}
             style={{
-              height: "70%",
               alignSelf: "center",
+              objectFit: "fill",
+              width: "100%",
+              height: "100%",
             }}
           />
         </Col>
-        <Col span={16}>
+        <Col xs={24} sm={24} md={24} lg={16} xl={16}>
           <Card>
             <Tabs
               defaultActiveKey="1"

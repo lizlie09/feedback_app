@@ -206,13 +206,14 @@ const Login = () => {
           <h3> TSC Breeder farm. External farm of San Miguel foods INC</h3>
         </Col>
       </Row>
-      <Row style={{ marginTop: 50 }} gutter={200}>
-        <Col span={12}>
+      <Row gutter={200}>
+        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
           <img
             src={"../assets/images/rate.svg"}
             style={{
               height: 200,
               marginBottom: 50,
+              marginTop: 50,
             }}
           />
           <ProForm
@@ -262,12 +263,13 @@ const Login = () => {
             />
           </ProForm>
         </Col>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
           <img
             src={"../assets/images/admin.svg"}
             style={{
               height: 200,
               marginBottom: 50,
+              marginTop: 50,
             }}
           />
           <Title level={3}>Administrator</Title>
