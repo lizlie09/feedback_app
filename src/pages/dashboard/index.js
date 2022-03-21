@@ -153,7 +153,7 @@ export default () => {
   const AdminTable = () => {
     return (
       <Row gutter={10}>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
           <ProTable
             actionRef={reportsTableRef}
             request={async (params, sorter, filter) => {
@@ -250,7 +250,7 @@ export default () => {
             headerTitle="Reported Offices"
           />
         </Col>
-        <Col span={12}>
+        <Col  xs={24} sm={24} md={24} lg={12} xl={12}>
           <ProTable
             actionRef={commentsTableRef}
             request={async (params, sorter, filter) => {
@@ -708,7 +708,7 @@ export default () => {
         />
       )}
       <Row gutter={10}>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
           <Card
             title={`Respondents (Total ${totalRespondents})`}
             extra={
@@ -720,7 +720,7 @@ export default () => {
             {raterTypes.length > 0 ? <Pie {...config} /> : <NoData />}
           </Card>
         </Col>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
           <Card
             style={{ height: "100%" }}
             title="Performance"
