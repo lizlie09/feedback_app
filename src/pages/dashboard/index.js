@@ -309,7 +309,7 @@ export default () => {
                 title: "Actions",
                 fixed: "right",
                 search: false,
-                width: 30,
+                width: 40,
                 render: (dom, entity) => {
                   return (
                     <Button
