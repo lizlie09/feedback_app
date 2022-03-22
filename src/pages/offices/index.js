@@ -55,11 +55,12 @@ export default () => {
         columns={[
           {
             title: "Name of Office",
-            width: 80,
+         
             dataIndex: "name",
           },
           {
             title: "Email",
+            width: 50,
             dataIndex: "email",
           },
           {

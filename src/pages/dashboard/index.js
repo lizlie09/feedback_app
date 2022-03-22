@@ -183,7 +183,7 @@ export default () => {
             columns={[
               {
                 title: "Name",
-                width: 80,
+                width: 90,
                 dataIndex: "establishment",
                 filters: true,
                 filterMultiple: false,
@@ -199,6 +199,7 @@ export default () => {
               },
               {
                 title: "Remarks",
+                width: 90,
                 dataIndex: "remarks",
                 render: (dom, entity) =>
                   `${entity.remarks ? "Done" : "Pending"}`,
@@ -212,6 +213,7 @@ export default () => {
               },
               {
                 title: "Date",
+                width: 90,
                 dataIndex: "createdAt",
                 valueType: "date",
                 render: (dom, entity) =>
@@ -247,7 +249,7 @@ export default () => {
               filterType: "light",
             }}
             dateFormatter="string"
-            headerTitle="Reported Offices"
+            headerTitle="Overall Reported Offices"
           />
         </Col>
         <Col  xs={24} sm={24} md={24} lg={12} xl={12}>
@@ -278,12 +280,13 @@ export default () => {
             columns={[
               {
                 title: "Comments and Suggestions",
-                width: 400,
+                width: 100,
                 dataIndex: "rateComment",
                 search: false,
               },
               {
                 title: "Remarks",
+                width: 90,
                 dataIndex: "remarks",
                 render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
                 filters: true,
@@ -296,6 +299,7 @@ export default () => {
               },
               {
                 title: "Date",
+                width: 90,
                 dataIndex: "createdAt",
                 render: (dom, entity) =>
                   `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
@@ -305,7 +309,7 @@ export default () => {
                 title: "Actions",
                 fixed: "right",
                 search: false,
-                width: 120,
+                width: 30,
                 render: (dom, entity) => {
                   return (
                     <Button
