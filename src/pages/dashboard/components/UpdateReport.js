@@ -9,7 +9,14 @@ import ProForm, {
 import { updateReport } from "../../../services/dashboard";
 import store from "store";
 
-export default ({ state, setState, actionRef, selectedReport }) => {
+export default ({
+  state,
+  setState,
+  actionRef,
+  selectedReport,
+  assignedOfficerTableRef,
+  commentsTableRef,
+}) => {
   let user = store.get("user");
   let { mode, data } = selectedReport;
 
@@ -34,6 +41,8 @@ export default ({ state, setState, actionRef, selectedReport }) => {
               setState(false);
               message.success(res.message);
               actionRef?.current?.reload();
+              assignedOfficerTableRef?.current?.reload?.();
+              commentsTableRef?.current?.reload?.();
             } else {
               message.error(res?.message);
             }

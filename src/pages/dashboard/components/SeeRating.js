@@ -7,7 +7,11 @@ export default ({ state, setState, comment }) => {
   console.log(comment.rate_one);
   return (
     <Modal
-      title={`${comment.establishment} | ${comment.fullname}`}
+      title={
+        <>
+          {comment.establishment} | <strong>{comment.fullname}</strong>
+        </>
+      }
       centered
       visible={state}
       onCancel={() => setState(false)}

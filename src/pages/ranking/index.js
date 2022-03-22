@@ -38,7 +38,6 @@ export default () => {
     >
       <ProTable
         request={async (params, sorter, filter) => {
-          console.log(filter?.year?.[0]);
           try {
             let res = await getRankings({
               year: filter?.year?.[0] || undefined,
@@ -56,6 +55,15 @@ export default () => {
             dataIndex: "name",
           },
           {
+            title: "Overall Percentage",
+            sorter: true,
+            render: (dom, entity) =>
+              `${getPercentage(entity?.rate, entity?.increment)}%`,
+            sorter: (a, b) =>
+              getPercentage(a?.rate, a?.increment) -
+              getPercentage(b?.rate, b?.increment),
+          },
+          {
             title: "Year",
             dataIndex: "year",
             filters: true,
@@ -69,11 +77,6 @@ export default () => {
               2026: { text: "2026" },
               2027: { text: "2027" },
             },
-          },
-          {
-            title: "Overall Percentage",
-            render: (dom, entity) =>
-              `${getPercentage(entity?.rate, entity?.increment)}%`,
           },
         ]}
         rowKey="key"

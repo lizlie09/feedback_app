@@ -60,6 +60,26 @@ const Login = () => {
         onFinish={async (values) => {
           await handleSubmit(values);
         }}
+        submitter={{
+          render: (props, doms) => {
+            return [
+              <Button
+                loading={props?.submitButtonProps?.loading}
+                type="primary"
+                key="submit"
+                onClick={() => props.form?.submit?.()}
+              >
+                Log In
+              </Button>,
+              <Button
+                loading={props?.submitButtonProps?.loading}
+                onClick={() => props.form?.resetFields?.()}
+              >
+                Reset
+              </Button>,
+            ];
+          },
+        }}
       >
         <div style={{ marginTop: 10 }} />
         <ProFormRadio.Group
@@ -131,6 +151,26 @@ const Login = () => {
           } catch (error) {
             message.error("Sign up failed.");
           }
+        }}
+        submitter={{
+          render: (props, doms) => {
+            return [
+              <Button
+                loading={props?.submitButtonProps?.loading}
+                type="primary"
+                key="submit"
+                onClick={() => props.form?.submit?.()}
+              >
+                Sign Up
+              </Button>,
+              <Button
+                loading={props?.submitButtonProps?.loading}
+                onClick={() => props.form?.resetFields?.()}
+              >
+                Reset
+              </Button>,
+            ];
+          },
         }}
       >
         <ProFormText
