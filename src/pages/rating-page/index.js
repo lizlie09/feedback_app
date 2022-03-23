@@ -304,7 +304,7 @@ export default () => {
               "Refusal To Obey Legitimate Management Instructions",
               "Negligence In Performance Of Duties",
               "Absenteeism And Leaving The Workplace Without Permission",
-              "Miss Conduct In Relationships With Fellow Employees Or Clients In The Public",
+              "Misconduct In Relationships With Fellow Employees Or Clients In The Public",
               "Damage To Council Property",
               "Swearing Or Verbal Abuse Of Fellow Employees Or Client In The Public",
               "Unauthorized Use Of Councils Facilities ( Ex. Tools, Equipment’s And Vehicles)",

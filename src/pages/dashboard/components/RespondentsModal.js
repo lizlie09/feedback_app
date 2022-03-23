@@ -35,7 +35,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
           columns={[
             {
               title: "Full Name",
-              width: 80,
+              width:80,
               dataIndex: "fullname",
               search: false,
             },
@@ -66,7 +66,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
               },
             },
             {
-              title: "Issues",
+              title: "Issues",       
               search: false,
               render: (dom, entity) => {
                 return <strong>{entity?.reports?.join(". ")}</strong>;
@@ -83,6 +83,7 @@ export default ({ state, setState, onSeeRatings, user }) => {
           rowKey="key"
           pagination={{
             showQuickJumper: true,
+            pageSize: 5,
           }}
           search={{
             filterType: "light",

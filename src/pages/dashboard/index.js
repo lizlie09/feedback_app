@@ -535,7 +535,7 @@ export default () => {
               ]}
               rowKey="key"
               pagination={{
-                pageSize: 10,
+                pageSize: 5,
               }}
               search={{
                 filterType: "light",
@@ -623,7 +623,7 @@ export default () => {
               ]}
               rowKey="key"
               pagination={{
-                pageSize: 10,
+                pageSize: 5,
               }}
               search={{
                 filterType: "light",
@@ -739,7 +739,7 @@ export default () => {
           ]}
           rowKey="key"
           pagination={{
-            pageSize: 10,
+            pageSize: 5,
           }}
           search={{
             filterType: "light",
