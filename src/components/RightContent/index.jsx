@@ -26,6 +26,7 @@ const GlobalHeaderRight = () => {
 
   return (
     <Space className={className}>
+      <SelectLang className={styles.action} />
       {location.pathname !== "/rating-page" && <Avatar />}
     </Space>
   );
