@@ -8,7 +8,7 @@ const Footer = () => {
     <DefaultFooter
       links={[
         {
-          title: 'Visitant Corporation',
+          title: 'TSC Breeder Farm',
           href: 'https://visitour.app',
           blankTarget: true,
         },
