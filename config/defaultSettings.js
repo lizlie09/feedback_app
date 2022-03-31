@@ -6,7 +6,7 @@ const Settings = {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'TSC Breeder Farm',
+  title: 'TSC Breeder farm. External farm of San Miguel foods INC',
   pwa: false,
   logo: '../assets/images/icons.png',
   iconfontUrl: '',

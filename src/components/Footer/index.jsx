@@ -8,9 +8,10 @@ const Footer = () => {
     <DefaultFooter
       links={[
         {
-          title: 'TSC Breeder Farm',
+          title: 'TSC Breeder farm. External farm of San Miguel foods INC',
           href: 'https://visitour.app',
           blankTarget: true,
+
         },
       ]}
     />

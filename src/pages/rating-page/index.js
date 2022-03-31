@@ -12,9 +12,10 @@ import { useLocation } from "react-router-dom";
 import { getOffices } from "../../services/office";
 import { PageContainer } from "@ant-design/pro-layout";
 import { SmileOutlined } from "@ant-design/icons";
-
+import { PageHeader } from 'antd';
+import { Typography } from "antd";
 const { TabPane } = Tabs;
-
+const { Title } = Typography;
 export default () => {
   const location = useLocation();
   let { fullname, raterType } = location.state;
@@ -44,6 +45,7 @@ export default () => {
     return (
       <Card>
         <ProForm
+          
           onFinish={async (value) => {
             let res = await rate({ ...value, fullname, raterType });
             try {
@@ -77,7 +79,7 @@ export default () => {
             <Tag color="gold">4 Stars - Satisfied</Tag>
             <Tag color="gold">3 Stars - Neutral</Tag>
             <Tag color="gold">2 Stars - Dissatisfied</Tag>
-            <Tag color="gold">1 Stars - Very Dissatisfied</Tag>
+            <Tag color="gold">1 Star - Very Dissatisfied</Tag>
           </Row>
           <div style={{ height: 20 }} />
           <Row>
@@ -293,7 +295,7 @@ export default () => {
             rules={[
               {
                 required: true,
-              },
+              }
             ]}
           />
           <ProFormCheckbox.Group
@@ -307,7 +309,7 @@ export default () => {
               "Misconduct In Relationships With Fellow Employees Or Clients In The Public",
               "Damage To Council Property",
               "Swearing Or Verbal Abuse Of Fellow Employees Or Client In The Public",
-              "Unauthorized Use Of Councils Facilities ( Ex. Tools, Equipment’s And Vehicles)",
+              "Unauthorized Use Of Councils Facilities ( Ex. Tools, Equipment's And Vehicles)",
             ]}
             rules={[
               {
@@ -328,10 +330,11 @@ export default () => {
 
   return (
     <PageContainer
-      avatar={<SmileOutlined color="black" />}
-      title={<strong>Hello, {fullname}</strong>}
-      subTitle={`(${raterType})`}
-    >
+    style={{ backgroundColor: '#F1EAE1' }}
+    onBack={() => window.history.back()}
+    title={<strong>Hello, {fullname}</strong>}
+    subTitle={`(${raterType})`}
+ >
       <Row gutter={20} align="middle">
         <Col
           xs={24}
@@ -341,7 +344,7 @@ export default () => {
           xl={8}
         >
           <img
-            src={"../assets/images/rate1.svg"}
+            src={"../assets/images/doctor.svg"}
             style={{
               alignSelf: "center",
               objectFit: "fill",
@@ -357,7 +360,7 @@ export default () => {
               style={{ marginBottom: 32 }}
               destroyInactiveTabPane={true}
             >
-              <TabPane tab="Click to Rate" key="1">
+              <TabPane tab="Click to Rate" key="1" >
                 <RatingView />
               </TabPane>
               {raterType !== "Visitor" && (
@@ -369,6 +372,6 @@ export default () => {
           </Card>
         </Col>
       </Row>
-    </PageContainer>
+      </PageContainer> 
   );
 };

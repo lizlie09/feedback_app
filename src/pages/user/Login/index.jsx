@@ -64,14 +64,16 @@ const Login = () => {
           render: (props, doms) => {
             return [
               <Button
+                size="large"
                 loading={props?.submitButtonProps?.loading}
                 type="primary"
                 key="submit"
                 onClick={() => props.form?.submit?.()}
               >
-                Log In
+                Login
               </Button>,
               <Button
+                size="large"
                 loading={props?.submitButtonProps?.loading}
                 onClick={() => props.form?.resetFields?.()}
               >
@@ -268,6 +270,7 @@ const Login = () => {
                     loading={props?.submitButtonProps?.loading}
                     type="primary"
                     key="submit"
+                    size="large"
                     onClick={() => props.form?.submit?.()}
                   >
                     Rate Now!
@@ -294,6 +297,7 @@ const Login = () => {
               }}
               label={"I am a"}
               radioType="button"
+              size="large"
               options={["Doctor", "Client", "Company Employee", "Visitor"]}
               rules={[
                 {

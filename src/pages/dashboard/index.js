@@ -365,6 +365,7 @@ export default () => {
     };
 
     return (
+      
       <PageContainer
         title={user.mode === "admin" ? "Dashboard" : user.name}
         extra={<SwitchablePicker />}
