@@ -12,7 +12,7 @@ import { useLocation } from "react-router-dom";
 import { getOffices } from "../../services/office";
 import { PageContainer } from "@ant-design/pro-layout";
 import { SmileOutlined } from "@ant-design/icons";
-import { PageHeader } from 'antd';
+import { PageHeader } from "antd";
 import { Typography } from "antd";
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -20,6 +20,27 @@ export default () => {
   const location = useLocation();
   let { fullname, raterType } = location.state;
   let [offices, setOffices] = useState([]);
+  let [imagePath, setImagePath] = useState("../assets/images/doctor.svg");
+
+  useEffect(() => {
+    // "Doctor", "Client", "Company Employee", "Visitor"
+
+    if (raterType === "Doctor") {
+      setImagePath("../assets/images/doctor.svg");
+    }
+
+    if (raterType === "Client") {
+      setImagePath("../assets/images/client.svg");
+    }
+
+    if (raterType === "Company Employee") {
+      setImagePath("../assets/images/company-staff.svg");
+    }
+
+    if (raterType === "Visitor") {
+      setImagePath("../assets/images/visitor.svg");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchOffices = async () => {
@@ -45,7 +66,6 @@ export default () => {
     return (
       <Card>
         <ProForm
-          
           onFinish={async (value) => {
             let res = await rate({ ...value, fullname, raterType });
             try {
@@ -295,7 +315,7 @@ export default () => {
             rules={[
               {
                 required: true,
-              }
+              },
             ]}
           />
           <ProFormCheckbox.Group
@@ -330,21 +350,15 @@ export default () => {
 
   return (
     <PageContainer
-    style={{ backgroundColor: '#F1EAE1' }}
-    onBack={() => window.history.back()}
-    title={<strong>Hello, {fullname}</strong>}
-    subTitle={`(${raterType})`}
- >
+      style={{ backgroundColor: "#F1EAE1" }}
+      onBack={() => window.history.back()}
+      title={<strong>Hello, {fullname}</strong>}
+      subTitle={`(${raterType})`}
+    >
       <Row gutter={20} align="middle">
-        <Col
-          xs={24}
-          sm={24}
-          md={24}
-          lg={8}
-          xl={8}
-        >
+        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
           <img
-            src={"../assets/images/doctor.svg"}
+            src={imagePath}
             style={{
               alignSelf: "center",
               objectFit: "fill",
@@ -360,7 +374,7 @@ export default () => {
               style={{ marginBottom: 32 }}
               destroyInactiveTabPane={true}
             >
-              <TabPane tab="Click to Rate" key="1" >
+              <TabPane tab="Click to Rate" key="1">
                 <RatingView />
               </TabPane>
               {raterType !== "Visitor" && (
@@ -372,6 +386,6 @@ export default () => {
           </Card>
         </Col>
       </Row>
-      </PageContainer> 
+    </PageContainer>
   );
 };

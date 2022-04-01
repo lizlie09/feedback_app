@@ -59,7 +59,7 @@ export const layout = ({ initialState, setInitialState }) => {
     menu: {
       params: initialState,
       request: async (params, defaultMenuData) => {
-        let { mode } = store.get('user');
+        let { mode } = store.get("user");
         return mode === "admin" ? adminIcons : null;
       },
     },
@@ -68,19 +68,17 @@ export const layout = ({ initialState, setInitialState }) => {
       return (
         <>
           {children}
-          {!props.location?.pathname?.includes('/login') && (
           <SettingDrawer
-              disableUrlParams
-              enableDarkTheme
-             settings={initialState?.settings}
-             onSettingChange={(settings) => {
+            disableUrlParams
+            enableDarkTheme
+            settings={initialState?.settings}
+            onSettingChange={(settings) => {
               setInitialState((preInitialState) => ({
                 ...preInitialState,
                 settings,
               }));
             }}
-            />
-            )}
+          />
         </>
       );
     },

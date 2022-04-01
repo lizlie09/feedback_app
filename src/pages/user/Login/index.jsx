@@ -6,7 +6,7 @@ import { login, signup } from "@/services/user";
 import styles from "./index.less";
 import store from "store";
 import { Typography } from "antd";
-
+import { PageContainer } from "@ant-design/pro-layout";
 const { Title } = Typography;
 
 import ProForm, { ProFormText, ProFormRadio } from "@ant-design/pro-form";
@@ -72,11 +72,7 @@ const Login = () => {
               >
                 Login
               </Button>,
-              <Button
-                size="large"
-                loading={props?.submitButtonProps?.loading}
-                onClick={() => props.form?.resetFields?.()}
-              >
+              <Button size="large" onClick={() => props.form?.resetFields?.()}>
                 Reset
               </Button>,
             ];
@@ -165,10 +161,7 @@ const Login = () => {
               >
                 Sign Up
               </Button>,
-              <Button
-                loading={props?.submitButtonProps?.loading}
-                onClick={() => props.form?.resetFields?.()}
-              >
+              <Button onClick={() => props.form?.resetFields?.()}>
                 Reset
               </Button>,
             ];
@@ -271,7 +264,7 @@ const Login = () => {
                     type="primary"
                     key="submit"
                     size="large"
-                    onClick={() => props.form?.submit?.()}
+                      onClick={() => props.form?.submit?.()}
                   >
                     Rate Now!
                   </Button>,
