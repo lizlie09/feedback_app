@@ -57,12 +57,11 @@ export default () => {
           {
             title: "Overall Percentage",
             sorter: true,
-            defaultSortOrder: "ascend",
+            defaultSortOrder: "descend",
             render: (dom, entity) =>
               `${getPercentage(entity?.rate, entity?.increment)}%`,
             sorter: (a, b) =>
-              getPercentage(b?.rate, b?.increment) -
-              getPercentage(a?.rate, a?.increment),
+              getPercentage(a?.rate, a?.increment) - getPercentage(b?.rate, b?.increment),
           },
           {
             title: "Year",
