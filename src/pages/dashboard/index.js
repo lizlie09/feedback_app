@@ -244,6 +244,7 @@ const ReportsTable = ({
   forPrint,
   establishment,
 }) => {
+  let [total, setTotal] = useState(0);
   return (
     <Row gutter={10}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -258,6 +259,11 @@ const ReportsTable = ({
                 establishment: establishment || null,
                 ...params,
               });
+              let _count = res.countPerCategory.reduce((a, b) => {
+                console.log(a, b);
+                return a + b.count;
+              }, 0);
+              setTotal(_count);
               return {
                 data: res.countPerCategory,
               };
@@ -280,13 +286,13 @@ const ReportsTable = ({
           ]}
           rowKey="key"
           pagination={{
-            pageSize: 5,
+            pageSize: 20,
           }}
           search={{
             filterType: "light",
           }}
           dateFormatter="string"
-          headerTitle="Report Count"
+          headerTitle={`Report Count (${total})`}
         />
         <div style={{ height: 10 }} />
       </Col>
