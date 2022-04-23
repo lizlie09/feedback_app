@@ -20,11 +20,13 @@ import {
   getComments,
   getRatertypes,
   getAssignedOfficeComments,
+  getPendingAndResolved,
 } from "../../services/dashboard";
 import moment from "moment";
 const { RangePicker } = DatePicker;
 import UpdateReport from "./components/UpdateReport";
 import SeeRating from "./components/SeeRating";
+import IssuesModal from "./components/IssuesModal";
 import store from "store";
 import { PageContainer } from "@ant-design/pro-layout";
 import { getOffices } from "../../services/office";
@@ -32,6 +34,331 @@ import NoData from "@/components/NoData";
 import { history, Link } from "umi";
 
 const { Option } = Select;
+
+const AdminTable = ({
+  offices,
+  overallFilter,
+  reportsTableRef,
+  commentsTableRef,
+  setUpdateReport,
+  setSelectedReport,
+  forPrint,
+}) => {
+  return (
+    <Row gutter={10}>
+      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+        <ProTable
+          actionRef={reportsTableRef}
+          request={async (params, sorter, filter) => {
+            console.log("Called");
+            try {
+              let res = await getReportedDepartment({
+                overallFilter: overallFilter
+                  ? JSON.stringify(overallFilter)
+                  : null,
+                remarks: filter?.remarks
+                  ? filter?.remarks?.[0] === "1"
+                    ? true
+                    : false
+                  : null,
+                establishment: filter.establishment?.[0] || null,
+                ...params,
+              });
+              return {
+                data: res.reports,
+                total: res.total,
+              };
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+          scroll={{ x: 1000 }}
+          columns={[
+            {
+              title: "Name",
+              width: 90,
+              dataIndex: "establishment",
+              filters: true,
+              filterMultiple: false,
+              valueEnum: offices,
+              search: false,
+            },
+            {
+              title: "Issues",
+              render: (dom, entity) => {
+                return <strong>{entity?.reports?.join(". ")}</strong>;
+              },
+              search: false,
+            },
+            {
+              title: "Remarks",
+              width: 90,
+              dataIndex: "remarks",
+              render: (dom, entity) => `${entity.remarks ? "Done" : "Pending"}`,
+              filters: true,
+              filterMultiple: false,
+              valueEnum: {
+                1: { text: "Done" },
+                0: { text: "Pending" },
+              },
+              search: false,
+            },
+            {
+              title: "Date",
+              width: 90,
+              dataIndex: "createdAt",
+              valueType: "date",
+              render: (dom, entity) =>
+                `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
+            },
+            {
+              title: "Actions",
+              search: false,
+              fixed: "right",
+              width: 120,
+              hideInTable: forPrint,
+              render: (dom, entity) => {
+                return (
+                  <Button
+                    key="button"
+                    icon={<EditOutlined />}
+                    type="primary"
+                    onClick={() => {
+                      setSelectedReport({ mode: "reports", data: entity });
+                      setUpdateReport(true);
+                    }}
+                  >
+                    Update
+                  </Button>
+                );
+              },
+            },
+          ]}
+          rowKey="key"
+          pagination={{
+            pageSize: 5,
+          }}
+          search={{
+            filterType: "light",
+          }}
+          dateFormatter="string"
+          headerTitle="Overall Reported Offices"
+        />
+        <div style={{ height: 10 }} />
+      </Col>
+      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+        <ProTable
+          actionRef={commentsTableRef}
+          request={async (params, sorter, filter) => {
+            try {
+              let res = await getComments({
+                overallFilter: overallFilter
+                  ? JSON.stringify(overallFilter)
+                  : null,
+                remarks: filter?.remarks
+                  ? filter?.remarks?.[0] === "1"
+                    ? true
+                    : false
+                  : null,
+                ...params,
+              });
+              return {
+                data: res.comments,
+                total: res?.total,
+              };
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+          scroll={{ x: 1000 }}
+          columns={[
+            {
+              title: "Comments and Suggestions",
+              width: 100,
+              dataIndex: "rateComment",
+              search: false,
+            },
+            {
+              title: "Remarks",
+              width: 90,
+              dataIndex: "remarks",
+              render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
+              filters: true,
+              filterMultiple: false,
+              valueEnum: {
+                1: { text: "Done" },
+                0: { text: "Pending" },
+              },
+              search: false,
+            },
+            {
+              title: "Date",
+              width: 90,
+              dataIndex: "createdAt",
+              render: (dom, entity) =>
+                `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
+              valueType: "date",
+            },
+            {
+              title: "Actions",
+              fixed: "right",
+              search: false,
+              hideInTable: forPrint,
+              width: 40,
+              render: (dom, entity) => {
+                return (
+                  <Button
+                    key="button"
+                    icon={<EditOutlined />}
+                    type="primary"
+                    onClick={() => {
+                      setSelectedReport({ mode: "comments", data: entity });
+                      setUpdateReport(true);
+                    }}
+                  >
+                    Update
+                  </Button>
+                );
+              },
+            },
+          ]}
+          rowKey="key"
+          pagination={{
+            pageSize: 5,
+          }}
+          search={{
+            filterType: "light",
+          }}
+          dateFormatter="string"
+          headerTitle="Overall Comments and Suggestions"
+        />{" "}
+      </Col>
+    </Row>
+  );
+};
+
+const AssignedOfficerTable = ({
+  assignedOfficerTableRef,
+  setUpdateReport,
+  setSelectedReport,
+  overallFilter,
+  user,
+  setSeeRatings,
+  forPrint,
+}) => {
+  return (
+    <ProTable
+      actionRef={assignedOfficerTableRef}
+      request={async (params, sorter, filter) => {
+        try {
+          let res = await getAssignedOfficeComments({
+            overallFilter: overallFilter ? JSON.stringify(overallFilter) : null,
+            officeName: user.name,
+            remarks: filter?.remarks
+              ? filter?.remarks?.[0] === "1"
+                ? true
+                : false
+              : null,
+            ...params,
+          });
+          return {
+            data: res.comments,
+            total: res?.total,
+          };
+        } catch (err) {
+          console.log(err);
+        }
+      }}
+      columns={[
+        {
+          title: "Name",
+          dataIndex: "fullname",
+          search: false,
+        },
+        {
+          title: "Ratings",
+          dataIndex: "ratings",
+          search: false,
+          render: (dom, entity) => {
+            return (
+              <Button
+                onClick={() => {
+                  setSeeRatings(true);
+                  setSelectedReport(entity);
+                }}
+              >
+                See Ratings
+              </Button>
+            );
+          },
+        },
+        {
+          title: "Comments and Suggestions",
+          dataIndex: "rateComment",
+          search: false,
+        },
+        {
+          title: "Reports",
+          render: (dom, entity) => {
+            return <strong>{entity?.reports?.join(". ")}</strong>;
+          },
+          search: false,
+        },
+        {
+          title: "Remarks",
+          dataIndex: "remarks",
+          render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
+          filters: true,
+          filterMultiple: false,
+          valueEnum: {
+            1: { text: "Done" },
+            0: { text: "Pending" },
+          },
+          search: false,
+        },
+        {
+          title: "Date",
+          dataIndex: "createdAt",
+          valueType: "date",
+          render: (dom, entity) =>
+            `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
+        },
+        {
+          title: "Actions",
+          search: false,
+          hideInTable: forPrint,
+          render: (dom, entity) => {
+            return (
+              <Button
+                key="button"
+                icon={<EditOutlined />}
+                type="primary"
+                onClick={() => {
+                  setSelectedReport({
+                    mode: "assigned-officer",
+                    data: entity,
+                  });
+                  setUpdateReport(true);
+                }}
+              >
+                Update
+              </Button>
+            );
+          },
+        },
+      ]}
+      rowKey="key"
+      pagination={{
+        pageSize: 5,
+      }}
+      search={{
+        filterType: "light",
+      }}
+      dateFormatter="string"
+      headerTitle="Overall Rating/Reports/Comments and Suggestions"
+    />
+  );
+};
 
 export default () => {
   const user = store.get("user");
@@ -51,8 +378,16 @@ export default () => {
   const [overallFilterDate, setOverallFilterDate] = useState("");
   const [overallFilter, setOverallFilter] = useState(null);
   const [totalRespondents, setTotalRespondents] = useState(0);
+  const [issuesModal, setIssuesModal] = useState(false);
+  const [pendingIssues, setPendingIssues] = useState([]);
+  const [resolvedIssues, setResolvedIssues] = useState([]);
+  const [totalIssues, setTotalIssues] = useState({
+    pending: 0,
+    resolved: 0,
+  });
   let [isFetchingRespondents, setIsFetchingRespondents] = useState(false);
   let [isFetchingPerformance, setIsFetchingPerformance] = useState(false);
+  let [isFetchingIssues, setIsFetchingIssues] = useState(false);
 
   const _getPerformance = async ({ overallFilter, startDate, endDate }) => {
     setIsFetchingPerformance(true);
@@ -89,6 +424,37 @@ export default () => {
     }
   };
 
+  const _getPendingAndResolved = async ({ overallFilter }) => {
+    setIsFetchingIssues(true);
+    let res = await getPendingAndResolved({
+      overallFilter: overallFilter ? JSON.stringify(overallFilter) : null,
+      establishment: user?.mode === "assigned-officer" ? user?.name : undefined,
+    });
+    if (res.success) {
+      res?.categorizedRemarks?.forEach((data) => {
+        setPendingIssues((pendingIssues) => [
+          ...pendingIssues,
+          {
+            type: `${data._id} - ${data.pending}`,
+            value: data.pending,
+          },
+        ]);
+        setResolvedIssues((resolvedIssues) => [
+          ...resolvedIssues,
+          {
+            type: `${data._id} - ${data.resolved}`,
+            value: data.resolved,
+          },
+        ]);
+
+        totalIssues.pending += data.pending;
+        totalIssues.resolved += data.resolved;
+      });
+      setTotalIssues(totalIssues);
+      setIsFetchingIssues(false);
+    }
+  };
+
   const _fetchOffices = async () => {
     let res = await getOffices();
     if (res.success) {
@@ -103,6 +469,7 @@ export default () => {
 
   useState(() => {
     _getPerformance({});
+    _getPendingAndResolved({});
   }, []);
 
   useState(() => {
@@ -118,6 +485,27 @@ export default () => {
     angleField: "value",
     colorField: "type",
     radius: 0.9,
+    label: {
+      type: "inner",
+      offset: "-30%",
+      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+      style: {
+        fontSize: 14,
+        textAlign: "center",
+      },
+    },
+
+    interactions: [
+      {
+        type: "element-active",
+      },
+    ],
+  };
+
+  var config1 = {
+    angleField: "value",
+    colorField: "type",
+    radius: 0.7,
     label: {
       type: "inner",
       offset: "-30%",
@@ -352,6 +740,7 @@ export default () => {
 
     _getRatertypes({ overallFilter });
     _getPerformance({ overallFilter });
+    _getPendingAndResolved({ overallFilter });
     setOverallFilter(overallFilter);
     reportsTableRef?.current?.reload?.();
     commentsTableRef?.current?.reload?.();
@@ -360,6 +749,11 @@ export default () => {
 
   if (location.pathname.includes("/admin/print/dashboard")) {
     config.label = {
+      type: "outer",
+      content: "{name} {percentage}",
+    };
+
+    config1.label = {
       type: "outer",
       content: "{name} {percentage}",
     };
@@ -378,226 +772,57 @@ export default () => {
         </Card>
         <div style={{ height: 10 }} />
         {user.mode === "admin" && (
-          <>
-            <Card>
-              <ProTable
-                actionRef={reportsTableRef}
-                request={async (params, sorter, filter) => {
-                  console.log(params);
-                  try {
-                    let res = await getReportedDepartment({
-                      overallFilter: overallFilter
-                        ? JSON.stringify(overallFilter)
-                        : null,
-                      remarks: filter?.remarks
-                        ? filter?.remarks?.[0] === "1"
-                          ? true
-                          : false
-                        : null,
-                      establishment: filter.establishment?.[0] || null,
-                      ...params,
-                    });
-                    return {
-                      data: res.reports,
-                      total: res.total,
-                    };
-                  } catch (err) {
-                    console.log(err);
-                  }
-                }}
-                scroll={{ x: 700 }}
-                columns={[
-                  {
-                    title: "Name",
-                    width: 90,
-                    dataIndex: "establishment",
-                    filters: true,
-                    filterMultiple: false,
-                    valueEnum: offices,
-                    search: false,
-                  },
-                  {
-                    title: "Issues",
-                    render: (dom, entity) => {
-                      return <strong>{entity?.reports?.join(". ")}</strong>;
-                    },
-                    search: false,
-                  },
-                  {
-                    title: "Remarks",
-                    width: 90,
-                    dataIndex: "remarks",
-                    render: (dom, entity) =>
-                      `${entity.remarks ? "Done" : "Pending"}`,
-                    filters: true,
-                    filterMultiple: false,
-                    valueEnum: {
-                      1: { text: "Done" },
-                      0: { text: "Pending" },
-                    },
-                    search: false,
-                  },
-                  {
-                    title: "Date",
-                    width: 90,
-                    dataIndex: "createdAt",
-                    valueType: "date",
-                    render: (dom, entity) =>
-                      `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-                  },
-                ]}
-                rowKey="key"
-                pagination={{
-                  pageSize: 6,
-                }}
-                search={{
-                  filterType: "light",
-                }}
-                dateFormatter="string"
-                headerTitle="Overall Reported Offices"
-              />
-            </Card>
-            <div style={{ height: 10 }} />
-            <Card>
-              <ProTable
-                actionRef={commentsTableRef}
-                request={async (params, sorter, filter) => {
-                  try {
-                    let res = await getComments({
-                      overallFilter: overallFilter
-                        ? JSON.stringify(overallFilter)
-                        : null,
-                      remarks: filter?.remarks
-                        ? filter?.remarks?.[0] === "1"
-                          ? true
-                          : false
-                        : null,
-                      ...params,
-                    });
-                    return {
-                      data: res.comments,
-                      total: res?.total,
-                    };
-                  } catch (err) {
-                    console.log(err);
-                  }
-                }}
-                columns={[
-                  {
-                    title: "Comments and Suggestions",
-                    width: 100,
-                    dataIndex: "rateComment",
-                    search: false,
-                  },
-                  {
-                    title: "Remarks",
-                    width: 90,
-                    dataIndex: "remarks",
-                    render: (dom, entity) =>
-                      entity?.remarks ? "Done" : "Pending",
-                    filters: true,
-                    filterMultiple: false,
-                    valueEnum: {
-                      1: { text: "Done" },
-                      0: { text: "Pending" },
-                    },
-                    search: false,
-                  },
-                  {
-                    title: "Date",
-                    width: 90,
-                    dataIndex: "createdAt",
-                    render: (dom, entity) =>
-                      `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-                    valueType: "date",
-                  },
-                ]}
-                rowKey="key"
-                pagination={{
-                  pageSize: 10,
-                }}
-                search={{
-                  filterType: "light",
-                }}
-                dateFormatter="string"
-                headerTitle="Overall Comments and Suggestions"
-              />
-            </Card>
-          </>
+          <Card
+            loading={isFetchingIssues}
+            title={`Resolved Issues (${totalIssues.resolved})`}
+          >
+            <Col>
+              {raterTypes.length > 0 ? (
+                <Pie data={resolvedIssues} {...config1} />
+              ) : (
+                <NoData />
+              )}
+            </Col>
+          </Card>
+        )}
+        {user.mode === "admin" && (
+          <Card
+            loading={isFetchingIssues}
+            title={`Pending Issues (${totalIssues.pending})`}
+          >
+            <Col>
+              {raterTypes.length > 0 ? (
+                <Pie data={pendingIssues} {...config1} />
+              ) : (
+                <NoData />
+              )}
+            </Col>
+          </Card>
         )}
 
+        {/* ADMIN TABLE HERE */}
+        {user.mode === "admin" && (
+          <AdminTable
+            offices={offices}
+            overallFilter={overallFilter}
+            commentsTableRef={commentsTableRef}
+            reportsTableRef={reportsTableRef}
+            setUpdateReport={setUpdateReport}
+            setSelectedReport={setSelectedReport}
+            forPrint={true}
+          />
+        )}
+        {/* ASSIGNED OFFICER TABLE HERE */}
         {user.mode === "assigned-officer" && (
-          <Card>
-            <ProTable
-              actionRef={assignedOfficerTableRef}
-              request={async (params, sorter, filter) => {
-                try {
-                  let res = await getAssignedOfficeComments({
-                    overallFilter: overallFilter
-                      ? JSON.stringify(overallFilter)
-                      : null,
-                    officeName: user.name,
-                    remarks: filter?.remarks
-                      ? filter?.remarks?.[0] === "1"
-                        ? true
-                        : false
-                      : null,
-                    ...params,
-                  });
-                  return {
-                    data: res.comments,
-                    total: res?.total,
-                  };
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-              columns={[
-                {
-                  title: "Name",
-                  dataIndex: "fullname",
-                  search: false,
-                },
-
-                {
-                  title: "Comments and Suggestions",
-                  dataIndex: "rateComment",
-                  search: false,
-                },
-                {
-                  title: "Reports",
-                  render: (dom, entity) => {
-                    return <strong>{entity?.reports?.join(". ")}</strong>;
-                  },
-                  search: false,
-                },
-                {
-                  title: "Remarks",
-                  dataIndex: "remarks",
-                  render: (dom, entity) =>
-                    entity?.remarks ? "Done" : "Pending",
-                  filters: true,
-                  filterMultiple: false,
-                  valueEnum: {
-                    1: { text: "Done" },
-                    0: { text: "Pending" },
-                  },
-                  search: false,
-                },
-                {
-                  title: "Date",
-                  dataIndex: "createdAt",
-                  valueType: "date",
-                  render: (dom, entity) =>
-                    `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-                },
-              ]}
-              search={{
-                filterType: "light",
-              }}
-              headerTitle="Overall Rating/Reports/Comments and Suggestions"
-            />
-          </Card>
+          <AssignedOfficerTable
+            assignedOfficerTableRef={assignedOfficerTableRef}
+            setUpdateReport={setUpdateReport}
+            setSelectedReport={setSelectedReport}
+            overallFilter={overallFilter}
+            user={user}
+            setSeeRatings={setSeeRatings}
+            forPrint={true}
+          />
         )}
       </PageContainer>
     );
@@ -617,6 +842,13 @@ export default () => {
             setSelectedReport(item);
           }}
           user={user}
+        />
+      )}
+      {issuesModal && (
+        <IssuesModal
+          state={issuesModal}
+          setState={setIssuesModal}
+          offices={offices}
         />
       )}
       {updateReport && (
@@ -662,310 +894,76 @@ export default () => {
         </Col>
       </Row>
       <div style={{ height: 10 }} />
-      {/* ADMIN TABLE HERE */}
       {user.mode === "admin" && (
         <Row gutter={10}>
           <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-            <ProTable
-              actionRef={reportsTableRef}
-              request={async (params, sorter, filter) => {
-                console.log(params);
-                try {
-                  let res = await getReportedDepartment({
-                    overallFilter: overallFilter
-                      ? JSON.stringify(overallFilter)
-                      : null,
-                    remarks: filter?.remarks
-                      ? filter?.remarks?.[0] === "1"
-                        ? true
-                        : false
-                      : null,
-                    establishment: filter.establishment?.[0] || null,
-                    ...params,
-                  });
-                  return {
-                    data: res.reports,
-                    total: res.total,
-                  };
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-              scroll={{ x: 1000 }}
-              columns={[
-                {
-                  title: "Name",
-                  width: 90,
-                  dataIndex: "establishment",
-                  filters: true,
-                  filterMultiple: false,
-                  valueEnum: offices,
-                  search: false,
-                },
-                {
-                  title: "Issues",
-                  render: (dom, entity) => {
-                    return <strong>{entity?.reports?.join(". ")}</strong>;
-                  },
-                  search: false,
-                },
-                {
-                  title: "Remarks",
-                  width: 90,
-                  dataIndex: "remarks",
-                  render: (dom, entity) =>
-                    `${entity.remarks ? "Done" : "Pending"}`,
-                  filters: true,
-                  filterMultiple: false,
-                  valueEnum: {
-                    1: { text: "Done" },
-                    0: { text: "Pending" },
-                  },
-                  search: false,
-                },
-                {
-                  title: "Date",
-                  width: 90,
-                  dataIndex: "createdAt",
-                  valueType: "date",
-                  render: (dom, entity) =>
-                    `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-                },
-                {
-                  title: "Actions",
-                  search: false,
-                  fixed: "right",
-                  width: 120,
-                  render: (dom, entity) => {
-                    return (
-                      <Button
-                        key="button"
-                        icon={<EditOutlined />}
-                        type="primary"
-                        onClick={() => {
-                          setSelectedReport({ mode: "reports", data: entity });
-                          setUpdateReport(true);
-                        }}
-                      >
-                        Update
-                      </Button>
-                    );
-                  },
-                },
-              ]}
-              rowKey="key"
-              pagination={{
-                pageSize: 5,
-              }}
-              search={{
-                filterType: "light",
-              }}
-              dateFormatter="string"
-              headerTitle="Overall Reported Offices"
-            />
-            <div style={{ height: 10 }} />
+            <Card
+              loading={isFetchingIssues}
+              title={`Resolved Issues (${totalIssues.resolved})`}
+              extra={
+                <Button
+                  type="primary"
+                  onClick={() => setIssuesModal("resolved")}
+                >
+                  See Resolved Issues
+                </Button>
+              }
+            >
+              <Col>
+                {raterTypes.length > 0 ? (
+                  <Pie data={resolvedIssues} {...config1} />
+                ) : (
+                  <NoData />
+                )}
+              </Col>
+            </Card>
           </Col>
           <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-            <ProTable
-              actionRef={commentsTableRef}
-              request={async (params, sorter, filter) => {
-                try {
-                  let res = await getComments({
-                    overallFilter: overallFilter
-                      ? JSON.stringify(overallFilter)
-                      : null,
-                    remarks: filter?.remarks
-                      ? filter?.remarks?.[0] === "1"
-                        ? true
-                        : false
-                      : null,
-                    ...params,
-                  });
-                  return {
-                    data: res.comments,
-                    total: res?.total,
-                  };
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-              scroll={{ x: 1000 }}
-              columns={[
-                {
-                  title: "Comments and Suggestions",
-                  width: 100,
-                  dataIndex: "rateComment",
-                  search: false,
-                },
-                {
-                  title: "Remarks",
-                  width: 90,
-                  dataIndex: "remarks",
-                  render: (dom, entity) =>
-                    entity?.remarks ? "Done" : "Pending",
-                  filters: true,
-                  filterMultiple: false,
-                  valueEnum: {
-                    1: { text: "Done" },
-                    0: { text: "Pending" },
-                  },
-                  search: false,
-                },
-                {
-                  title: "Date",
-                  width: 90,
-                  dataIndex: "createdAt",
-                  render: (dom, entity) =>
-                    `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-                  valueType: "date",
-                },
-                {
-                  title: "Actions",
-                  fixed: "right",
-                  search: false,
-                  width: 40,
-                  render: (dom, entity) => {
-                    return (
-                      <Button
-                        key="button"
-                        icon={<EditOutlined />}
-                        type="primary"
-                        onClick={() => {
-                          setSelectedReport({ mode: "comments", data: entity });
-                          setUpdateReport(true);
-                        }}
-                      >
-                        Update
-                      </Button>
-                    );
-                  },
-                },
-              ]}
-              rowKey="key"
-              pagination={{
-                pageSize: 5,
-              }}
-              search={{
-                filterType: "light",
-              }}
-              dateFormatter="string"
-              headerTitle="Overall Comments and Suggestions"
-            />{" "}
+            <Card
+              loading={isFetchingIssues}
+              title={`Pending Issues (${totalIssues.pending})`}
+              extra={
+                <Button
+                  type="primary"
+                  onClick={() => setIssuesModal("pending")}
+                >
+                  See Pending Issues
+                </Button>
+              }
+            >
+              <Col>
+                {raterTypes.length > 0 ? (
+                  <Pie data={pendingIssues} {...config1} />
+                ) : (
+                  <NoData />
+                )}
+              </Col>
+            </Card>
           </Col>
         </Row>
       )}
+
+      <div style={{ height: 10 }} />
+      {/* ADMIN TABLE HERE */}
+      {user.mode === "admin" && (
+        <AdminTable
+          offices={offices}
+          overallFilter={overallFilter}
+          commentsTableRef={commentsTableRef}
+          reportsTableRef={reportsTableRef}
+          setUpdateReport={setUpdateReport}
+          setSelectedReport={setSelectedReport}
+        />
+      )}
       {/* ASSIGNED OFFICER TABLE HERE */}
       {user.mode === "assigned-officer" && (
-        <ProTable
-          actionRef={assignedOfficerTableRef}
-          request={async (params, sorter, filter) => {
-            try {
-              let res = await getAssignedOfficeComments({
-                overallFilter: overallFilter
-                  ? JSON.stringify(overallFilter)
-                  : null,
-                officeName: user.name,
-                remarks: filter?.remarks
-                  ? filter?.remarks?.[0] === "1"
-                    ? true
-                    : false
-                  : null,
-                ...params,
-              });
-              return {
-                data: res.comments,
-                total: res?.total,
-              };
-            } catch (err) {
-              console.log(err);
-            }
-          }}
-          columns={[
-            {
-              title: "Name",
-              dataIndex: "fullname",
-              search: false,
-            },
-            {
-              title: "Ratings",
-              dataIndex: "ratings",
-              search: false,
-              render: (dom, entity) => {
-                return (
-                  <Button
-                    onClick={() => {
-                      setSeeRatings(true);
-                      setSelectedReport(entity);
-                    }}
-                  >
-                    See Ratings
-                  </Button>
-                );
-              },
-            },
-            {
-              title: "Comments and Suggestions",
-              dataIndex: "rateComment",
-              search: false,
-            },
-            {
-              title: "Reports",
-              render: (dom, entity) => {
-                return <strong>{entity?.reports?.join(". ")}</strong>;
-              },
-              search: false,
-            },
-            {
-              title: "Remarks",
-              dataIndex: "remarks",
-              render: (dom, entity) => (entity?.remarks ? "Done" : "Pending"),
-              filters: true,
-              filterMultiple: false,
-              valueEnum: {
-                1: { text: "Done" },
-                0: { text: "Pending" },
-              },
-              search: false,
-            },
-            {
-              title: "Date",
-              dataIndex: "createdAt",
-              valueType: "date",
-              render: (dom, entity) =>
-                `${moment(entity?.createdAt).format("MMMM DD, YYYY")}`,
-            },
-            {
-              title: "Actions",
-              search: false,
-              render: (dom, entity) => {
-                return (
-                  <Button
-                    key="button"
-                    icon={<EditOutlined />}
-                    type="primary"
-                    onClick={() => {
-                      setSelectedReport({
-                        mode: "assigned-officer",
-                        data: entity,
-                      });
-                      setUpdateReport(true);
-                    }}
-                  >
-                    Update
-                  </Button>
-                );
-              },
-            },
-          ]}
-          rowKey="key"
-          pagination={{
-            pageSize: 5,
-          }}
-          search={{
-            filterType: "light",
-          }}
-          dateFormatter="string"
-          headerTitle="Overall Rating/Reports/Comments and Suggestions"
+        <AssignedOfficerTable
+          assignedOfficerTableRef={assignedOfficerTableRef}
+          setUpdateReport={setUpdateReport}
+          setSelectedReport={setSelectedReport}
+          overallFilter={overallFilter}
+          user={user}
+          setSeeRatings={setSeeRatings}
         />
       )}
     </PageContainer>

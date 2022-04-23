@@ -1,9 +1,22 @@
 import { request } from "umi";
-import store from "store"
+import store from "store";
 
 export async function getRatertypes(query) {
   const token = store.get("token");
   return request(`${API_URL}/get-ratertypes`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}
+
+export async function getPendingAndResolved(query) {
+  const token = store.get("token");
+  return request(`${API_URL}/get-pending-resolved`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
