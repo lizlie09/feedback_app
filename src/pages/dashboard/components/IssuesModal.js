@@ -19,7 +19,6 @@ export default ({ state, setState, offices }) => {
       >
         <ProTable
           request={async (params, sorter, filter) => {
-            console.log("Called");
             try {
               let res = await getReportedDepartment({
                 remarks: filter?.remarks

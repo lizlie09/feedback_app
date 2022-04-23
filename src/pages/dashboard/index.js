@@ -21,6 +21,7 @@ import {
   getRatertypes,
   getAssignedOfficeComments,
   getPendingAndResolved,
+  countReportsByCategory,
 } from "../../services/dashboard";
 import moment from "moment";
 const { RangePicker } = DatePicker;
@@ -237,6 +238,62 @@ const AdminTable = ({
   );
 };
 
+const ReportsTable = ({
+  overallFilter,
+  reportsCountTableRef,
+  forPrint,
+  establishment,
+}) => {
+  return (
+    <Row gutter={10}>
+      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+        <ProTable
+          actionRef={reportsCountTableRef}
+          request={async (params, sorter, filter) => {
+            try {
+              let res = await countReportsByCategory({
+                overallFilter: overallFilter
+                  ? JSON.stringify(overallFilter)
+                  : null,
+                establishment: establishment || null,
+                ...params,
+              });
+              return {
+                data: res.countPerCategory,
+              };
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+          scroll={{ x: 1000 }}
+          columns={[
+            {
+              title: "Report",
+              dataIndex: "label",
+              search: false,
+            },
+            {
+              title: "Count",
+              dataIndex: "count",
+              search: false,
+            },
+          ]}
+          rowKey="key"
+          pagination={{
+            pageSize: 5,
+          }}
+          search={{
+            filterType: "light",
+          }}
+          dateFormatter="string"
+          headerTitle="Report Count"
+        />
+        <div style={{ height: 10 }} />
+      </Col>
+    </Row>
+  );
+};
+
 const AssignedOfficerTable = ({
   assignedOfficerTableRef,
   setUpdateReport,
@@ -365,6 +422,7 @@ export default () => {
   const reportsTableRef = useRef();
   const commentsTableRef = useRef();
   const assignedOfficerTableRef = useRef();
+  const reportsCountTableRef = useRef();
   const { location } = history;
 
   const [performance, setPerformance] = useState({});
@@ -743,6 +801,7 @@ export default () => {
     _getPendingAndResolved({ overallFilter });
     setOverallFilter(overallFilter);
     reportsTableRef?.current?.reload?.();
+    reportsCountTableRef?.current?.reload?.();
     commentsTableRef?.current?.reload?.();
     assignedOfficerTableRef?.current?.reload?.();
   };
@@ -799,6 +858,13 @@ export default () => {
             </Col>
           </Card>
         )}
+
+        <ReportsTable
+          overallFilter={overallFilter}
+          reportsCountTableRef={reportsCountTableRef}
+          forPrint={true}
+          establishment={user.name}
+        />
 
         {/* ADMIN TABLE HERE */}
         {user.mode === "admin" && (
@@ -942,6 +1008,14 @@ export default () => {
           </Col>
         </Row>
       )}
+      <div style={{ height: 10 }} />
+
+      <ReportsTable
+        overallFilter={overallFilter}
+        reportsCountTableRef={reportsCountTableRef}
+        forPrint={true}
+        establishment={user.name}
+      />
 
       <div style={{ height: 10 }} />
       {/* ADMIN TABLE HERE */}

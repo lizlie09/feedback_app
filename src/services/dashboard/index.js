@@ -14,6 +14,19 @@ export async function getRatertypes(query) {
   });
 }
 
+export async function countReportsByCategory(query) {
+  const token = store.get("token");
+  return request(`${API_URL}/count-reports-by-category`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    params: query,
+    skipErrorHandler: true,
+  });
+}
+
 export async function getPendingAndResolved(query) {
   const token = store.get("token");
   return request(`${API_URL}/get-pending-resolved`, {
